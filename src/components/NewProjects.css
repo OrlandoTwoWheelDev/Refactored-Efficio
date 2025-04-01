@@ -1,0 +1,80 @@
+/* Container styling */
+.projects-container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Navbar styling */
+.projects-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.nav-button {
+  text-decoration: none;
+  padding: 10px 15px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  font-weight: bold;
+  color: black;
+  margin-right: 10px;
+}
+
+.nav-button.active {
+  background: #c0c0c0;
+}
+
+/* Project Form Styling */
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background: #f9f9f9;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.button-group button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button-group button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.button-group button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
