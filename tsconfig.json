@@ -1,7 +1,26 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "compilerOptions": {
+    "target": "ESNext",  // ESNext allows latest JS features
+    "module": "ESNext",  // ESNext for Node.js compatibility
+    "moduleResolution": "Node",  // Node-style module resolution
+    "esModuleInterop": true,  // Allow importing non-ESM modules
+    "outDir": "./dist",  // Output compiled JS to 'dist' folder
+    "rootDir": "./",  // Root of your TypeScript files
+    "strict": true,  // Keep strict mode for better error checking
+    "skipLibCheck": true,  // Skip checking types in declaration files
+    "resolveJsonModule": true,  // Allow importing JSON files (if needed)
+    "allowJs": true,  // Allow mixing JS and TS
+    "noEmit": false,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "server.ts", 
+    "db/**/*", 
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }
