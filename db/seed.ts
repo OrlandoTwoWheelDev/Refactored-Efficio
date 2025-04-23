@@ -1,7 +1,7 @@
 import pool from "./pool.js";
 import { createUser } from "./users.js";
 import { User } from "./users.js";
-import { createTeam, createTeamUser, createTeamProject } from "./teams.js";
+import { createTeams, createTeamsUser, createTeamsProject } from "./teams.js";
 import Team from "./teams.js";
 import { createProjects } from "./projects.js";
 import Project from "./projects.js";
@@ -9,7 +9,7 @@ import { createTasks } from "./tasks.js";
 
 const dropTables = async () => {
   await pool.query(`
-    DROP TABLE IF EXISTS messages, tasks, projects_teams, teams_users, projects, teams, users CASCADE;
+    DROP TABLE IF EXISTS messages, tasks, projectsTeams, teamsUsers, projects, teams, users CASCADE;
   `);
   console.log("🧹 Dropped all tables");
 };
@@ -29,17 +29,17 @@ const createTables = async () => {
 
     CREATE TABLE IF NOT EXISTS teams (
       id SERIAL PRIMARY KEY,
-      team_name VARCHAR(50) NOT NULL UNIQUE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      teamName VARCHAR(50) NOT NULL UNIQUE,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS projects (
       id SERIAL PRIMARY KEY,
-      project_name VARCHAR(50) NOT NULL UNIQUE,
+      projectName VARCHAR(50) NOT NULL UNIQUE,
       description TEXT NOT NULL,
       status VARCHAR(20) DEFAULT 'in-progress',
-      start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      end_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      startDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      endDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS tasks (
@@ -47,31 +47,31 @@ const createTables = async () => {
       username VARCHAR(50) NOT NULL,
       title VARCHAR(50) NOT NULL,
       description TEXT NOT NULL,
-      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE
+      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      projectId INTEGER REFERENCES projects(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS teams_users (
       id SERIAL PRIMARY KEY,
-      team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS projects_teams (
       id SERIAL PRIMARY KEY,
-      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
-      team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      projectId INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
       content TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
   console.log("🏗️ Created all tables");
@@ -100,17 +100,17 @@ const seedTasks = async () => {
 
 const seedTeams = async () => {
   return await Promise.all([
-    createTeam('Refactor Squad'),
-    createTeam('Bug Bashers'),
+    createTeams('Refactor Squad'),
+    createTeams('Bug Bashers'),
   ]);
 };
 
 const seedRelationships = async (users: User[], teams: Team[], projects: Project[]): Promise<void> => {
-  await createTeamUser(teams[0].team_name, users[0].username);
-  await createTeamUser(teams[1].team_name, users[1].username);
+  await createTeamsUser(teams[0].teamName, users[0].username);
+  await createTeamsUser(teams[1].teamName, users[1].username);
 
-  await createTeamProject(teams[0].team_name, projects[0].project_name);
-  await createTeamProject(teams[1].team_name, projects[1].project_name);
+  await createTeamsProject(teams[0].teamName, projects[0].projectName);
+  await createTeamsProject(teams[1].teamName, projects[1].projectName);
 
   await createTasks('Task 1', 'Basic setup', users[0].username, projects[0].id!);
   await createTasks('Task 2', 'Final polish', users[1].username, projects[1].id!);

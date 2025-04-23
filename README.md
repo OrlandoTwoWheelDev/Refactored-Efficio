@@ -81,3 +81,29 @@ The reason for the pause is that I recently graduated from coding bootcamp and w
 
 ## My Backstory in Short
 Before diving into development, I was a high-level HVAC technician at the end of 2024. In January 2025, I began my journey in coding with Fullstack Academy. In just a few months, I went from barely knowing how to use a computer to building full-stack websites with JavaScript, debugging code, enhancing security, and improving efficiency. I’ve learned numerous frameworks and tools along the way, but I always return to JavaScript as the foundation of my work. Additionally, I'm starting to pick up technologies like Node.js, Express, and React, and I’m excited to continue expanding my knowledge in these areas.
+
+
+# Update 🤩
+
+It’s been two weeks since I last touched this project — but that’s because I was building another one in the meantime!
+
+The big realization? I could spend weeks picking apart the way this project was originally set up, reworking section by section, and still end up with a pile of bugs. So I went all in: dismantled the entire thing, tagged the first version, created a new v2 branch, and started fresh. 🔥
+
+For the setup, I ran `create vite@latest` with the React & TypeScript template. I then set up:
+- **Docker** for hot reloading and containerization
+- **Jest** with mock tests to ensure functionality is testable
+- **Prettier** to keep formatting clean and consistent
+
+That setup — the learning curve, the config chaos, and the *million* questions — took up most of the day... but every bit was worth it.
+
+---
+
+### 🚀 What’s Different in v2
+
+- Dedicated **Chat** page (instead of scattered message boxes)
+- Auth-protected routes (not just checking if a user is signed in)
+- Enhanced **database functionality**
+- Segmented code structure for easier debugging
+- **Dockerized** for smoother deployment
+- **Jest** for continuous testing
+- Dynamic **DB seed** file usage

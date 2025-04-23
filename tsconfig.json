@@ -14,13 +14,13 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "server.ts", 
     "db/**/*", 
     "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "dist/client"
   ]
 }
