@@ -2,18 +2,18 @@ import pool from "./pool.js";
 
 type Team = {
   id: number;
-  team_name: string;
+  teamName: string;
   username: string;
-  project_name: string;
+  projectName: string;
 }
 
-export const createTeam = async (team_name: string): Promise<Team | undefined> => {
+export const createTeams = async (teamName: string): Promise<Team | undefined> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO teams (team_name)
+      INSERT INTO teams (teamName)
       VALUES ($1)
       RETURNING *;
-    `, [team_name]);
+    `, [teamName]);
 
     console.log('Team created:', rows);
     return rows[0];
@@ -22,11 +22,11 @@ export const createTeam = async (team_name: string): Promise<Team | undefined> =
   }
 };
 
-export const createTeamUser = async (team_name: string, username: string): Promise<Team | undefined> => {
+export const createTeamsUser = async (teamName: string, username: string): Promise<Team | undefined> => {
   try {
     const { rows: teamId } = await pool.query(`
-      SELECT id FROM teams WHERE team_name = $1;
-    `, [team_name]);
+      SELECT id FROM teams WHERE teamName = $1;
+    `, [teamName]);
 
     const { rows: userId } = await pool.query(`
       SELECT id FROM users WHERE username = $1;
@@ -37,7 +37,7 @@ export const createTeamUser = async (team_name: string, username: string): Promi
     }
 
     const { rows } = await pool.query(`
-      INSERT INTO teams_users (team_id, user_id)
+      INSERT INTO teamsUsers (teamId, userId)
       VALUES ($1, $2)
       RETURNING *;
     `, [teamId[0].id, userId[0].id]);
@@ -49,22 +49,22 @@ export const createTeamUser = async (team_name: string, username: string): Promi
   }
 };
 
-export const createTeamProject = async (team_name: string, project_name: string): Promise<Team | undefined> => {
+export const createTeamsProject = async (teamName: string, projectName: string): Promise<Team | undefined> => {
   try {
     const { rows: teamId } = await pool.query(`
-      SELECT id FROM teams WHERE team_name = $1;
-    `, [team_name]);
+      SELECT id FROM teams WHERE teamName = $1;
+    `, [teamName]);
 
     const { rows: projectId } = await pool.query(`
-      SELECT id FROM projects WHERE project_name = $1;
-    `, [project_name]);
+      SELECT id FROM projects WHERE projectName = $1;
+    `, [projectName]);
 
     if (teamId.length === 0 || projectId.length === 0) {
       throw new Error('Team or Project not found');
     }
 
     const { rows } = await pool.query(`
-      INSERT INTO projects_teams (team_id, project_id)
+      INSERT INTO projectsTeams (teamId, projectId)
       VALUES ($1, $2)
       RETURNING *;
     `, [teamId[0].id, projectId[0].id]);
@@ -76,10 +76,10 @@ export const createTeamProject = async (team_name: string, project_name: string)
   }
 };
 
-export const fetchAllTeamNames = async (): Promise<{ team_name: string }[] | undefined> => {
+export const getAllTeams = async (): Promise<{ team_name: string }[] | undefined> => {
   try {
     const { rows: retrievedTeams } = await pool.query(`
-      SELECT team_name FROM teams;
+      SELECT teamName FROM teams;
     `);
 
     return retrievedTeams;
@@ -93,29 +93,29 @@ export const fetchAllTeamNames = async (): Promise<{ team_name: string }[] | und
 export const retrieveTeamsByUsername = async (username: string): Promise<Team[] | undefined> => {
   try {
     const { rows: retrievedTeams } = await pool.query(`
-      SELECT t.team_name, t.id
+      SELECT t.teamName, t.id
       FROM teams t
-      JOIN teams_users tu ON t.id = tu.team_id
-      JOIN users u ON tu.user_id = u.id
+      JOIN teamsUsers tu ON t.id = tu.teamId
+      JOIN users u ON tu.userId = u.id
       WHERE u.username = $1;
     `, [username]);
 
     return retrievedTeams.map(item => ({
       id: item.id,
-      team_name: item.team_name,
+      teamName: item.teamName,
       username: username,
-      project_name: ''
+      projectName: ''
     }));
   } catch (err) {
     console.log('Error retrieving teams for username:', err);
   }
 };
 
-export const deleteTeam = async (team_name: string) => {
+export const deleteTeams = async (teamName: string) => {
   try {
     const { rows: deletedTeam } = await pool.query(`
-      DELETE FROM teams WHERE team_name = $1 RETURNING *;
-    `, [team_name]);
+      DELETE FROM teams WHERE teamName = $1 RETURNING *;
+    `, [teamName]);
 
     if (!deletedTeam.length) {
       throw new Error('Team not found');
@@ -125,6 +125,26 @@ export const deleteTeam = async (team_name: string) => {
     return deletedTeam;
   } catch (err) {
     console.log('Error deleting team:', err);
+  }
+};
+
+export const updateTeams = async (teamName: string, newTeamName: string) => {
+  try {
+    const { rows } = await pool.query(`
+      UPDATE teams
+      SET teamName = $1
+      WHERE teamName = $2
+      RETURNING *;
+    `, [newTeamName, teamName]);
+
+    if (!rows.length) {
+      throw new Error('Team not found');
+    }
+
+    console.log('Team updated:', rows);
+    return rows[0];
+  } catch (err) {
+    console.log('Error updating team:', err);
   }
 };
 

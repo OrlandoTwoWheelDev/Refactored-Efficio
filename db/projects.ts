@@ -4,49 +4,61 @@ const { isUUID } = pkg;
 
 type Project = {
   id: number;
-  project_name: string;
+  projectName: string;
   description: string;
   status: string;
-  start_date: Date;
-  end_date: Date;
+  startDate: Date;
+  endDate: Date;
 };
 
 export const createProjects = async (
-  project_name: string,
+  projectName: string,
   description: string,
   status: string,
-  start_date: Date,
-  end_date: Date
-): Promise<Project | undefined> => {
+  startDate: Date,
+  endDate: Date
+): Promise<Project> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO projects (project_name, description, status, start_date, end_date)
+      INSERT INTO projects (projectName, description, status, startDate, endDate)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `,
-      [project_name, description, status, start_date, end_date]
+      [projectName, description, status, startDate, endDate]
     );
     return rows[0];
   } catch (error) {
     console.error('Project Error - createProjects:', error);
-    return undefined;
+    throw new Error('Failed to create project');
+  }
+};
+
+export const getAllProjects = async (): Promise<Project[]> => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT * FROM projects;
+    `);
+    return rows;
+  } catch (error) {
+    console.error('Project Error - getAllProjects:', error);
+    return [];
   }
 };
 
 export const getProjectsByTeams = async (
-  team_id: string
+  teamId: string
 ): Promise<Project[] | undefined> => {
   try {
-    if (!isUUID(team_id)) {
-      throw new Error(`Invalid UUID format: ${team_id}`);
+    if (!isUUID(teamId)) {
+      throw new Error(`Invalid UUID format: ${teamId}`);
     }
 
     const { rows } = await pool.query(`
       SELECT projects.* FROM projects
-      JOIN projects_teams ON projects.id = projects_teams.project_id
-      WHERE projects_teams.team_id = $1;
+      JOIN projectsTeams ON projects.id = projectsTeams.projectId
+      WHERE projectsTeams.teamId = $1;
     `,
-      [team_id]
+      [teamId]
     );
 
     return rows;
@@ -57,20 +69,20 @@ export const getProjectsByTeams = async (
 };
 
 export const getProjectsByUsers = async (
-  user_id: string
+  userId: number
 ): Promise<Project[] | undefined> => {
   try {
-    if (!isUUID(user_id)) {
-      throw new Error(`Invalid UUID format: ${user_id}`);
+    if (!isUUID(userId.toString())) {
+      throw new Error(`Invalid UUID format: ${userId}`);
     }
 
     const { rows } = await pool.query(`
       SELECT projects.* FROM projects
-      JOIN projects_teams ON projects.id = projects_teams.project_id
-      JOIN teams_users ON projects_teams.team_id = teams_users.team_id
-      WHERE teams_users.user_id = $1;
+      JOIN projectsTeams ON projects.id = projectsTeams.projectId
+      JOIN teamsUsers ON projectsTeams.teamId = teamsUsers.teamId
+      WHERE teamsUsers.userId = $1;
     `,
-      [user_id]
+      [userId]
     );
 
     return rows;
@@ -87,10 +99,10 @@ export const getProjectsByUsername = async (
     const { rows } = await pool.query(`
       SELECT DISTINCT p.*
       FROM projects p
-      JOIN projects_teams pt ON p.id = pt.project_id
-      JOIN teams t ON pt.team_id = t.id
-      JOIN teams_users tu ON t.id = tu.team_id
-      JOIN users u ON tu.user_id = u.id
+      JOIN projectsTeams pt ON p.id = pt.projectId
+      JOIN teams t ON pt.teamId = t.id
+      JOIN teamsUsers tu ON t.id = tu.teamId
+      JOIN users u ON tu.userId = u.id
       WHERE u.username = $1;
     `,
       [username]
@@ -103,12 +115,64 @@ export const getProjectsByUsername = async (
   }
 };
 
-export const deleteExistingProject = async (
-  project_id: string
+export const getProjectsByPercentage = async(
+  userId: number
+): Promise<Project[] | undefined> => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT DISTINCT p.*
+      FROM projects p
+      JOIN projectsTeams pt ON p.id = pt.projectId
+      JOIN teams t ON pt.teamId = t.id
+      JOIN teamsUsers tu ON t.id = tu.teamId
+      JOIN users u ON tu.userId = u.id
+      WHERE u.id = $1;
+    `,
+      [userId]
+    );
+
+    return rows;
+  } catch (error) {
+    console.error('Project Error - getProjectsByPercentage:', error);
+    return undefined;
+  }
+}
+
+export const updateProjects = async (
+  projectId: string,
+  projectName: string,
+  description: string,
+  status: string,
+  startDate: Date,
+  endDate: Date
 ): Promise<Project | undefined> => {
   try {
-    if (!isUUID(project_id)) {
-      throw new Error(`Invalid UUID format: ${project_id}`);
+    if (!isUUID(projectId)) {
+      throw new Error(`Invalid UUID format: ${projectId}`);
+    }
+
+    const { rows } = await pool.query(`
+      UPDATE projects
+      SET projectName = $1, description = $2, status = $3, startDate = $4, endDate = $5
+      WHERE id = $6
+      RETURNING *;
+    `,
+      [projectName, description, status, startDate, endDate, projectId]
+    );
+
+    return rows[0];
+  } catch (error) {
+    console.error('Project Error - updateProjects:', error);
+    throw new Error('Failed to update project');
+  }
+};
+
+export const deleteExistingProject = async (
+  projectId: string
+): Promise<Project | undefined> => {
+  try {
+    if (!isUUID(projectId)) {
+      throw new Error(`Invalid UUID format: ${projectId}`);
     }
 
     const { rows } = await pool.query(`
@@ -116,7 +180,7 @@ export const deleteExistingProject = async (
       WHERE id = $1
       RETURNING *;
     `,
-      [project_id]
+      [projectId]
     );
 
     return rows[0];

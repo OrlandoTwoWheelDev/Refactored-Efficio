@@ -12,7 +12,7 @@ export type Task = {
 export const createTasks = async (title: string, description: string, username: string, projectId: number): Promise<Task | undefined> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO tasks (title, description, username, project_id)
+      INSERT INTO tasks (title, description, username, projectId)
       VALUES($1, $2, $3, $4)
       RETURNING *
     `, [title, description, username, projectId]);
@@ -35,11 +35,37 @@ export const getAllTasks = async (): Promise<Task[]> => {
   }
 };
 
+export const getTasksByProjectId = async (projectId: number): Promise<Task[]> => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT * FROM tasks
+      WHERE projectId = $1
+    `, [projectId]);
+    return rows;
+  } catch (err) {
+    console.error('Error getting tasks by project ID:', err);
+    return [];
+  }
+};
+
+export const getTasksByTeamId = async (teamId: number): Promise<Task[]> => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT * FROM tasks
+      WHERE teamId = $1
+    `, [teamId]);
+    return rows;
+  } catch (err) {
+    console.error('Error getting tasks by team ID:', err);
+    return [];
+  }
+};
+
 export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   try {
     const { rows } = await pool.query(`
       SELECT * FROM tasks
-      WHERE user_id = $1
+      WHERE userId = $1
     `, [userId]);
     return rows;
   } catch (err) {
@@ -48,7 +74,7 @@ export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   }
 };
 
-export const getMyTasksPercentage = async (username: string) => {
+export const getMyTasksPercentage = async (userId: number) => {
   try {
     const { rows: results } = await pool.query(`
       SELECT 
@@ -64,22 +90,22 @@ export const getMyTasksPercentage = async (username: string) => {
         ROUND(
           (COUNT(CASE WHEN t.status = 'completed' THEN 1 END) * 100.0) / COUNT(*),
           1
-        ) AS completed_percentage
+        ) AS completedPercentage
       FROM 
         tasks t
       JOIN
-        users u ON t.user_id = u.id  -- Adjusted here to use t.user_id
+        users u ON t.userId = u.id  -- Adjusted here to use t.userId
       WHERE 
         u.username = $1
       GROUP BY 
-        u.username;
-    `, [username]);
+        u.id;
+    `, [userId]);
 
     return {
-      username: results[0]?.username,
-      inProgressPercentage: results[0]?.in_progress_percentage,
-      pausedPercentage: results[0]?.paused_percentage,
-      completedPercentage: results[0]?.completed_percentage,
+      userId: userId,
+      inProgressPercentage: results[0]?.inProgressPercentage,
+      pausedPercentage: results[0]?.pausedPercentage,
+      completedPercentage: results[0]?.completedPercentage,
     };
 
   } catch (err) {
@@ -88,7 +114,7 @@ export const getMyTasksPercentage = async (username: string) => {
 };
 
 
-export const updateTask = async (id: number, title: string, description: string): Promise<Task | undefined> => {
+export const updateTasks = async (id: number, title: string, description: string): Promise<Task | undefined> => {
   try {
     const { rows } = await pool.query(`
       UPDATE tasks
@@ -103,7 +129,7 @@ export const updateTask = async (id: number, title: string, description: string)
   }
 };
 
-export const deleteTask = async (id: number): Promise<boolean> => {
+export const deleteTasks = async (id: number): Promise<boolean> => {
   try {
     await pool.query(`
       DELETE FROM tasks

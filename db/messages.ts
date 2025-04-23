@@ -19,9 +19,9 @@ export const createMessage = async (
   try {
     const { rows } = await pool.query(
       `
-      INSERT INTO messages (user_id, team_id, content)
+      INSERT INTO messages (userId, teamId, content)
       VALUES ($1, $2, $3)
-      RETURNING id, user_id, team_id, content, created_at, updated_at;
+      RETURNING id, userId, teamId, content, createdAt, updatedAt;
     `,
       [userId, teamId, content]
     );
@@ -29,12 +29,12 @@ export const createMessage = async (
 
     return {
       id: newMessage.id,
-      userId: newMessage.user_id,
-      username: (await getUserById(newMessage.user_id))?.username || 'Unknown',
-      teamId: newMessage.team_id,
+      userId: newMessage.userId,
+      username: (await getUserById(newMessage.userId))?.username || 'Unknown',
+      teamId: newMessage.teamId,
       content: newMessage.content,
-      createdAt: newMessage.created_at,
-      updatedAt: newMessage.updated_at
+      createdAt: newMessage.createdAt,
+      updatedAt: newMessage.updatedAt
     };
   } catch (error) {
     console.error('Error creating message:', error);
@@ -48,16 +48,16 @@ export const getMessages = async (teamId: number): Promise<Message[]> => {
     const { rows } = await pool.query(`
       SELECT 
         m.id,
-        m.user_id AS userId,
-        m.team_id AS teamId,
+        m.userId AS userId,
+        m.teamId AS teamId,
         m.content,
-        m.created_at AS createdAt,
-        m.updated_at AS updatedAt,
+        m.createdAt AS createdAt,
+        m.updatedAt AS updatedAt,
         u.username  -- Add this to get the username from the users table
       FROM messages m
-      JOIN users u ON m.user_id = u.id  -- Join to fetch the username
-      WHERE m.team_id = $1
-      ORDER BY m.created_at DESC;
+      JOIN users u ON m.userId = u.id  -- Join to fetch the username
+      WHERE m.teamId = $1
+      ORDER BY m.createdAt DESC;
     `, [teamId]);
 
     return rows.map((row: any) => ({
