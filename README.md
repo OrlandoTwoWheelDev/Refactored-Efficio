@@ -107,3 +107,30 @@ That setup — the learning curve, the config chaos, and the *million* questions
 - **Dockerized** for smoother deployment
 - **Jest** for continuous testing
 - Dynamic **DB seed** file usage
+
+
+## 😎 So far so good!
+I've come back to this project with a calmer mind about what all went down during bootcamp, while leveraging how much I have learned 
+in the past couple weeks. 
+
+**Side Note:** during this phase of fixing the catchall issue and building out the front end.... I am also going through the lovely
+journey of quitting smoking cigarrets and/or vaping. Been quite the rollercoaster while doing this beast of a project. 👀💀
+
+**The adjustments** made during this project refactor came from many questions and hours of understanding what I can or cannot do for the app. Along with what should and shouldn't be in the app. It has been this *constant* game of stopping to zoom out, question everything, 
+and zoom back in to utilize the new angle I am seeing it at! 
+
+### Things I've Kept in Mind🧠
+- question everything
+- zooming out to see the flow of the webpage
+- ensuring I have everything I will need in each section,
+so that the customer isn't lost or stuck
+- security of the project as a whole
+  - currently I dont have security mesaures 'in place', but I do have them in mind. 
+  - I am building it out first, so that after I can have feature branches to tackle the finer points
+- building out the basic structure was the goal for this feature branch
+  - up and comming branches will be:
+    - authorization via tokens
+    - styling
+    - beefing up the chat page to a whole dynamic chat room
+    - adjusting of routes as needed
+

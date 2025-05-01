@@ -13,6 +13,7 @@ export const getAccountInfo = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Account info not found.' });
       return;
     }
+    res.json({ data:info });
   } catch (error) {
     console.error('Error fetching account info:', error);
     res.status(500).json({ error: 'Server error while fetching account info.' });

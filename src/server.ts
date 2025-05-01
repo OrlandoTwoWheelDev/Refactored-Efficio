@@ -1,24 +1,34 @@
-import express from 'express'
-import path from 'path'
+// server.ts
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
 import { fileURLToPath } from 'url';
-// import { server } from './socket.io/socket.js'
+import { createServer } from 'http';
 import mainRouter from './routes/index.js';
+import { initSocket } from './socket.io/socket.js';
 
-const app = express()
-const port = process.env.PORT || 3000
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const app = express();
+const port = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, '../client')))
+// Create HTTP server
+const server = createServer(app);
+
+// Init Socket.IO with that server
+initSocket(server);
+
+app.use(cors());
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, '../client')));
 app.use(mainRouter);
 
-// app.get('*', (_req, res) => {
-//   res.sendFile(path.join(__dirname, '../client/index.html'))
-// })
+app.get(/^\/(?!api).*/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '../client/index.html'));
+});
 
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`)
-})
+server.listen(port, () => {
+  console.log(`🚀 Server + WebSocket listening at http://localhost:${port}`);
+  console.log('Socket.IO server initialized');
+});
