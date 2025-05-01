@@ -79,7 +79,7 @@ export const createTeamsProject = async (teamName: string, projectName: string):
 export const getAllTeams = async (): Promise<{ team_name: string }[] | undefined> => {
   try {
     const { rows: retrievedTeams } = await pool.query(`
-      SELECT teamName FROM teams;
+      SELECT * FROM teams;
     `);
 
     return retrievedTeams;
