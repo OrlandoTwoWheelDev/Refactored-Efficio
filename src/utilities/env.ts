@@ -15,3 +15,4 @@ export const DB_NAME = required('DB_NAME');
 export const DB_PASSWORD = required('DB_PASSWORD');
 export const DB_PORT = parseInt(required('DB_PORT'), 10);
 export const JWT_SECRET = required('JWT_SECRET');
+export const JWT_REFRESH_SECRET = required('JWT_REFRESH_SECRET');

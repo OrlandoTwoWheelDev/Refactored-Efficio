@@ -10,11 +10,16 @@ import MyAccount from './frontend/myAccount'
 import Team from './frontend/team'
 import Login from './frontend/login'
 import Register from './frontend/register'
-import { Chart } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const App = () => {
+  const isLoggedIn = !!localStorage.getItem('authToken');
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    window.location.href = '/login';
+  };
 
   return (
     <>
@@ -41,12 +46,20 @@ const App = () => {
     <div className="col-auto">
       <Link to="/team" className="btn btn-primary">Team</Link>
     </div>
-    <div className="col-auto">
-      <Link to="/login" className="btn btn-primary">Login</Link>
-    </div>
-    <div className="col-auto">
-      <Link to="/register" className="btn btn-primary">Register</Link>
-    </div>
+    {isLoggedIn ? (
+      <div className="col-auto">
+        <button onClick={handleLogout} className="btn btn-danger">Logout</button>
+      </div>
+        ) : (
+      <>
+        <div className="col-auto">
+          <Link to="/login" className="btn btn-primary">Login</Link>
+        </div>
+        <div className="col-auto">
+          <Link to="/register" className="btn btn-primary">Register</Link>
+        </div>
+      </>
+    )}
   </div>
 </nav>
 
