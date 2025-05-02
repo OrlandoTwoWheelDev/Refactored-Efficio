@@ -6,7 +6,7 @@ export default function MyAccount() {
   useEffect(() => {
     const fetchAccountInfo = async () => {
       try {
-        const response = await fetch("/api/myaccount");
+        const response = await fetch('/api/myaccount');
         const data = await response.json();
         setAccountInfo(data);
       } catch (error) {
@@ -49,7 +49,7 @@ export default function MyAccount() {
       <h1>My Account</h1>
       <img src={accountInfo.profilePic || "default-pic-url"} alt="Profile Picture" />
       <ul>
-        <li>{accountInfo.firstName} {accountInfo.lastName}</li>
+        <li>{accountInfo.firstname} {accountInfo.lastname}</li>
         <li>{accountInfo.email}</li>
         <li>{accountInfo.username}</li>
       </ul>

@@ -1,12 +1,3 @@
-
-body {
-  background-color: #121212;
-  color: #e0e0e0;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
 a {
   color: #0a0883;
   text-decoration: none;
@@ -22,12 +13,40 @@ a:hover {
 }
 
 .btn.btn-primary {
-  background-color: #098a4e;
-  border-color: #098a4e;
+  background-color: #158a53;
+  border: outset #3d92ca;
   text-decoration: none;
 }
 
 .btn.btn-primary:hover {
   background-color: #6b0a0a;
-  border-color: #6b0a0a;
+  border: outset #961d1d;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  height: 70dvh;
+}
+
+.inner-form {
+  background-color: rgba(243, 138, 217, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 300px;
+  max-width: 90%;
+  text-align: center;
+}
+
+label {
+  font-family:
+    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
+    Arial, sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.1rem;
 }

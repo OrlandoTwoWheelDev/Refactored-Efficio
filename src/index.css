@@ -1,3 +1,10 @@
 body {
-  background-color: cornflowerblue;
+  background-color: #15bed4 !important;
+  color: #4da099;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
 }

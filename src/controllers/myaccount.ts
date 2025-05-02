@@ -22,15 +22,15 @@ export const getAccountInfo = async (req: Request, res: Response) => {
 
 export const updateAccountInfo = async (req: Request, res: Response): Promise <void> => {
   try {
-    if (!req.body.firstName || !req.body.lastName || !req.body.email || !req.body.username) {
+    if (!req.body.firstname || !req.body.lastname || !req.body.email || !req.body.username) {
       res.status(400).json({ error: 'All fields are required to update the account.' });
       return;
     }    
 
     const updatedInfo = await updatingAccountInfo(
       req.body.id,
-      req.body.firstName,
-      req.body.lastName,
+      req.body.firstname,
+      req.body.lastname,
       req.body.email,
       req.body.password,
       req.body.username
@@ -48,8 +48,8 @@ export const updateAccountInfo = async (req: Request, res: Response): Promise <v
 
 export const deleteAccountInfo = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.id;
-    await deleteAccount(userId);
+    const userid = req.body.id;
+    await deleteAccount(userid);
     res.json({ message: 'Account deleted successfully.' });
   } catch (error) {
     console.error('Error deleting account info:', error);

@@ -4,27 +4,27 @@ const { isUUID } = pkg;
 
 type Project = {
   id: number;
-  projectName: string;
-  description: string;
+  projectname: string;
+  projectdescription: string;
   status: string;
-  startDate: Date;
-  endDate: Date;
+  startdate: Date;
+  enddate: Date;
 };
 
 export const createProjects = async (
-  projectName: string,
-  description: string,
+  projectname: string,
+  projectdescription: string,
   status: string,
-  startDate: Date,
-  endDate: Date
+  startdate: Date,
+  enddate: Date
 ): Promise<Project> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO projects (projectName, description, status, startDate, endDate)
+      INSERT INTO projects (projectname, projectdescription, status, startdate, enddate)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `,
-      [projectName, description, status, startDate, endDate]
+      [projectname, projectdescription, status, startdate, enddate]
     );
     return rows[0];
   } catch (error) {
@@ -141,7 +141,7 @@ export const getProjectsByPercentage = async(
 export const updateProjects = async (
   projectId: string,
   projectName: string,
-  description: string,
+  projectDescription: string,
   status: string,
   startDate: Date,
   endDate: Date
@@ -153,11 +153,11 @@ export const updateProjects = async (
 
     const { rows } = await pool.query(`
       UPDATE projects
-      SET projectName = $1, description = $2, status = $3, startDate = $4, endDate = $5
+      SET projectName = $1, projectDescription = $2, status = $3, startDate = $4, endDate = $5
       WHERE id = $6
       RETURNING *;
     `,
-      [projectName, description, status, startDate, endDate, projectId]
+      [projectName, projectDescription, status, startDate, endDate, projectId]
     );
 
     return rows[0];

@@ -19,8 +19,8 @@ export const getProjects = async (req: Request, res: Response) => {
 
 export const getProjectsByTeam = async (req: Request, res: Response) => {
   try {
-    const { teamId } = req.params;
-    const projects = await getProjectsByTeams(teamId);
+    const { teamid } = req.params;
+    const projects = await getProjectsByTeams(teamid);
     res.json(projects);
   } catch (error) {
     console.error('Error fetching projects by team:', error);
@@ -30,8 +30,8 @@ export const getProjectsByTeam = async (req: Request, res: Response) => {
 
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { projectName, description, status, startDate, endDate } = req.body;
-    const project = await createProjects(projectName, description, status, startDate, endDate);
+    const { projectname, projectdescription, status, startdate, enddate } = req.body;
+    const project = await createProjects(projectname, projectdescription, status, startdate, enddate);
     if (!project) {
       res.status(400).json({ error: 'Failed to create project.' });
       return;
@@ -46,8 +46,8 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { projectName, description, status, startDate, endDate } = req.body;
-    const project = await updateProjects(id, projectName, description, status, startDate, endDate);
+    const { projectname, description, status, startdate, enddate } = req.body;
+    const project = await updateProjects(id, projectname, description, status, startdate, enddate);
     if (!project) {
       res.status(400).json({ error: 'Failed to update project.' });
       return;

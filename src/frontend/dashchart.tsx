@@ -7,7 +7,7 @@ interface DashboardChartProps {
   taskData: { name: string; completionPercentage: number }[];
 }
 
-const DashboardChart = ({ projectData, taskData }: DashboardChartProps) => {
+const DashboardChart = ({ projectData = [], taskData = [] }: DashboardChartProps) => {
   const pieData = {
     labels: projectData.map((project) => project.name),
     datasets: [

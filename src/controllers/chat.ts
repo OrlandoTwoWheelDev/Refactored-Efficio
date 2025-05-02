@@ -7,8 +7,8 @@ export const getChatPage = (req: Request, res: Response) => {
 
 export const getChat = async (req: Request, res: Response) => {
   try {
-    const teamId = Number(req.params.teamId);
-  const chat = await getMessages(teamId);
+    const teamid = Number(req.params.teamid);
+  const chat = await getMessages(teamid);
   if (!chat) {
     res.status(400).json({ error: 'Failed to fetch chat messages.' });
     return;

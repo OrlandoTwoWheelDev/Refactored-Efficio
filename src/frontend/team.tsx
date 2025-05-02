@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 
-
 export default function TeamPage() {
   const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [selectedteam, setSelectedTeam] = useState<number | null>(null);
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
-  const [newTeamName, setNewTeamName] = useState('');
+  const [newteamname, setNewTeamName] = useState('');
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -19,7 +18,7 @@ export default function TeamPage() {
   const handleCreateTeam = async () => {
     const response = await fetch('/api/team', {
       method: 'POST',
-      body: JSON.stringify({ name: newTeamName }),
+      body: JSON.stringify({ name: newteamname }),
       headers: { 'Content-Type': 'application/json' },
     });
     const data = await response.json();
@@ -27,18 +26,18 @@ export default function TeamPage() {
     setNewTeamName('');
   };
 
-  const handleSelectTeam = async (teamId: string) => {
-    const response = await fetch(`/api/projects?teamId=${teamId}`);
+  const handleSelectTeam = async (teamid: string) => {
+    const response = await fetch(`/api/projects?teamId=${teamid}`);
     const data = await response.json();
     setProjects(data);
-    setSelectedTeam(Number(teamId));
+    setSelectedTeam(Number(teamid));
   };
 
-  const handleDeleteTeam = async (teamId: number) => {
-    await fetch(`/api/teams/${teamId}`, {
+  const handleDeleteTeam = async (teamid: number) => {
+    await fetch(`/api/teams/${teamid}`, {
       method: 'DELETE',
     });
-    setTeams(teams.filter(team => team.id !== teamId.toString()));
+    setTeams(teams.filter((team) => team.id !== teamid.toString()));
   };
 
   return (
@@ -47,11 +46,14 @@ export default function TeamPage() {
       <div>
         <input
           type="text"
-          value={newTeamName}
+          className="form-control"
+          value={newteamname}
           onChange={(e) => setNewTeamName(e.target.value)}
           placeholder="Enter new team name"
         />
-        <button onClick={handleCreateTeam}>Create Team</button>
+        <button className="btn btn-primary" onClick={handleCreateTeam}>
+          Create Team
+        </button>
       </div>
 
       <div>

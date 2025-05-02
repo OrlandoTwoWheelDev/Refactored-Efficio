@@ -17,8 +17,8 @@ export const getTeams = async (req: Request, res: Response) => {
 
 export const createTeam = async (req: Request, res: Response) => {
   try {
-    const { teamName } = req.body;
-    const newTeam = await createTeams(teamName);
+    const { teamname } = req.body;
+    const newTeam = await createTeams(teamname);
     res.status(201).json(newTeam);
   } catch (error) {
     console.error('Error creating team:', error);
@@ -28,8 +28,8 @@ export const createTeam = async (req: Request, res: Response) => {
 
 export const updateTeam = async (req: Request, res: Response) => {
   try {
-    const { teamName, newTeamName } = req.body;
-    const updatedTeam = await updateTeams(teamName, newTeamName);
+    const { teamname, newteamname } = req.body;
+    const updatedTeam = await updateTeams(teamname, newteamname);
     res.json(updatedTeam);
   } catch (error) {
     console.error('Error updating team:', error);
@@ -39,8 +39,8 @@ export const updateTeam = async (req: Request, res: Response) => {
 
 export const deleteTeam = async (req: Request, res: Response) => {
   try {
-    const { teamName } = req.body;
-    const deletedTeam = await deleteTeams(teamName);
+    const { teamname } = req.body;
+    const deletedTeam = await deleteTeams(teamname);
     res.json(deletedTeam);
   } catch (error) {
     console.error('Error deleting team:', error);
@@ -50,8 +50,8 @@ export const deleteTeam = async (req: Request, res: Response) => {
 
 export const assignUserToTeam = async (req: Request, res: Response) => {
   try {
-    const { teamName, username } = req.body;
-    const result = await createTeamsUser(teamName, username);
+    const { teamname, username } = req.body;
+    const result = await createTeamsUser(teamname, username);
     res.json(result);
   } catch (error) {
     console.error('Error assigning user to team:', error);

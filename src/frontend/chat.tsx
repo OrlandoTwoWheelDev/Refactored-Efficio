@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:10000');
+const socket = io('http://localhost:10000', { transports: ['websocket'], withCredentials: true, extraHeaders: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } });
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<any[]>([]);

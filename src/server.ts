@@ -21,7 +21,7 @@ initSocket(server);
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../client')));
+app.use(express.static(path.join(__dirname, '../dist')));
 app.use(mainRouter);
 
 app.get(/^\/(?!api).*/, (_req, res) => {

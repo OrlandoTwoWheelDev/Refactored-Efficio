@@ -5,17 +5,17 @@ export type Task = {
   username: string;
   title: string;
   description: string;
-  userId: number;
-  projectId: number;
+  userid: number;
+  projectid: number;
 };
 
-export const createTasks = async (title: string, description: string, username: string, projectId: number): Promise<Task | undefined> => {
+export const createTasks = async (title: string, description: string, username: string, projectid: number): Promise<Task | undefined> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO tasks (title, description, username, projectId)
+      INSERT INTO tasks (title, description, username, projectid)
       VALUES($1, $2, $3, $4)
       RETURNING *
-    `, [title, description, username, projectId]);
+    `, [title, description, username, projectid]);
     return rows[0];
   } catch (err) {
     console.error('Error creating task:', err);
@@ -35,12 +35,12 @@ export const getAllTasks = async (): Promise<Task[]> => {
   }
 };
 
-export const getTasksByProjectId = async (projectId: number): Promise<Task[]> => {
+export const getTasksByProjectId = async (projectid: number): Promise<Task[]> => {
   try {
     const { rows } = await pool.query(`
       SELECT * FROM tasks
-      WHERE projectId = $1
-    `, [projectId]);
+      WHERE projectid = $1
+    `, [projectid]);
     return rows;
   } catch (err) {
     console.error('Error getting tasks by project ID:', err);
@@ -48,12 +48,12 @@ export const getTasksByProjectId = async (projectId: number): Promise<Task[]> =>
   }
 };
 
-export const getTasksByTeamId = async (teamId: number): Promise<Task[]> => {
+export const getTasksByTeamId = async (teamid: number): Promise<Task[]> => {
   try {
     const { rows } = await pool.query(`
       SELECT * FROM tasks
-      WHERE teamId = $1
-    `, [teamId]);
+      WHERE teamid = $1
+    `, [teamid]);
     return rows;
   } catch (err) {
     console.error('Error getting tasks by team ID:', err);
@@ -61,12 +61,12 @@ export const getTasksByTeamId = async (teamId: number): Promise<Task[]> => {
   }
 };
 
-export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
+export const getTasksByUserId = async (userid: number): Promise<Task[]> => {
   try {
     const { rows } = await pool.query(`
       SELECT * FROM tasks
-      WHERE userId = $1
-    `, [userId]);
+      WHERE userid = $1
+    `, [userid]);
     return rows;
   } catch (err) {
     console.error('Error getting tasks by user ID:', err);
@@ -74,38 +74,38 @@ export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   }
 };
 
-export const getMyTasksPercentage = async (userId: number) => {
+export const getMyTasksPercentage = async (userid: number) => {
   try {
     const { rows: results } = await pool.query(`
       SELECT 
         u.username,
         ROUND(
-          (COUNT(CASE WHEN t.status = 'in-progress' THEN 1 END) * 100.0) / COUNT(*),
+          (COUNT(CASE WHEN t.status = 'active' THEN 1 END) * 100.0) / COUNT(*),
           1
-        ) AS in_progress_percentage,
+        ) AS activepercentage,
         ROUND(
-          (COUNT(CASE WHEN t.status = 'paused' THEN 1 END) * 100.0) / COUNT(*),
+          (COUNT(CASE WHEN t.status = 'pending' THEN 1 END) * 100.0) / COUNT(*),
           1
-        ) AS paused_percentage,
+        ) AS pendingpercentage,
         ROUND(
           (COUNT(CASE WHEN t.status = 'completed' THEN 1 END) * 100.0) / COUNT(*),
           1
-        ) AS completedPercentage
+        ) AS completedpercentage
       FROM 
         tasks t
       JOIN
-        users u ON t.userId = u.id  -- Adjusted here to use t.userId
+        users u ON t.userid = u.id  -- Adjusted here to use t.userid
       WHERE 
         u.username = $1
       GROUP BY 
         u.id;
-    `, [userId]);
+    `, [userid]);
 
     return {
-      userId: userId,
-      inProgressPercentage: results[0]?.inProgressPercentage,
-      pausedPercentage: results[0]?.pausedPercentage,
-      completedPercentage: results[0]?.completedPercentage,
+      userid: userid,
+      activepercentage: results[0]?.activepercentage,
+      pendingpercentage: results[0]?.pendingpercentage,
+      completedpercentage: results[0]?.completedpercentage,
     };
 
   } catch (err) {
