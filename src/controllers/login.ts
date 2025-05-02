@@ -13,7 +13,7 @@ export const loginUser = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Invalid email, password, or username.' });
       return;
     }
-    res.status(200).json({ message: 'Login successful', user });
+    res.status(200).json({ message: 'Login successful', token: user.token });
   } catch (error) {
     console.error('Error logging in user:', error);
     res.status(500).json({ error: 'Server error while logging in user.' });

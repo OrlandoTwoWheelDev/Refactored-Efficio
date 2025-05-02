@@ -3,38 +3,38 @@ import { getUserById } from "./users.js";
 
 export type Message = {
   id: number;
-  userId: number;
+  userid: number;
   username: string;
-  teamId: number;
+  teamid: number;
   content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdat: Date;
+  updatedat: Date;
 };
 
 export const createMessage = async (
-  userId: number,
-  teamId: number,
+  userid: number,
+  teamid: number,
   content: string
 ): Promise<Message | undefined> => {
   try {
     const { rows } = await pool.query(
       `
-      INSERT INTO messages (userId, teamId, content)
+      INSERT INTO messages (userid, teamid, content)
       VALUES ($1, $2, $3)
-      RETURNING id, userId, teamId, content, createdAt, updatedAt;
+      RETURNING id, userid, teamid, content, createdat, updatedat;
     `,
-      [userId, teamId, content]
+      [userid, teamid, content]
     );
     const newMessage = rows[0];
 
     return {
       id: newMessage.id,
-      userId: newMessage.userId,
-      username: (await getUserById(newMessage.userId))?.username || 'Unknown',
-      teamId: newMessage.teamId,
+      userid: newMessage.userid,
+      username: (await getUserById(newMessage.userid))?.username || 'Unknown',
+      teamid: newMessage.teamid,
       content: newMessage.content,
-      createdAt: newMessage.createdAt,
-      updatedAt: newMessage.updatedAt
+      createdat: newMessage.createdat,
+      updatedat: newMessage.updatedat
     };
   } catch (error) {
     console.error('Error creating message:', error);
@@ -43,30 +43,30 @@ export const createMessage = async (
 };
 
 
-export const getMessages = async (teamId: number): Promise<Message[]> => {
+export const getMessages = async (teamid: number): Promise<Message[]> => {
   try {
     const { rows } = await pool.query(`
       SELECT 
         m.id,
-        m.userId AS userId,
-        m.teamId AS teamId,
+        m.userid AS userid,
+        m.teamid AS teamid,
         m.content,
-        m.createdAt AS createdAt,
-        m.updatedAt AS updatedAt,
+        m.createdat AS createdat,
+        m.updatedat AS updatedat,
         u.username  -- Add this to get the username from the users table
       FROM messages m
-      JOIN users u ON m.userId = u.id  -- Join to fetch the username
-      WHERE m.teamId = $1
-      ORDER BY m.createdAt DESC;
-    `, [teamId]);
+      JOIN users u ON m.userid = u.id  -- Join to fetch the username
+      WHERE m.teamid = $1
+      ORDER BY m.createdat DESC;
+    `, [teamid]);
 
     return rows.map((row: any) => ({
       id: row.id,
-      userId: row.userId,
-      teamId: row.teamId,
+      userid: row.userid,
+      teamid: row.teamid,
       content: row.content,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
+      createdat: row.createdat,
+      updatedat: row.updatedat,
       username: row.username
     }));
   } catch (err) {

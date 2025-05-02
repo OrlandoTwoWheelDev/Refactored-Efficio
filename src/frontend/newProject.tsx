@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 export default function NewProject() {
-  const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
+  const [projectname, setProjectName] = useState('');
+  const [projectdescription, setProjectDescription] = useState('');
   const [status, setStatus] = useState('');
-  const [startDate, setStartDate] = useState(new Date().toISOString());
-  const [endDate, setEndDate] = useState<string | null>(null);
+  const [startdate, setStartDate] = useState('');
+  const [enddate, setEndDate] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,13 +14,14 @@ export default function NewProject() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({
-          projectName,
-          projectDescription,
+          projectname,
+          projectdescription,
           status,
-          startDate,
-          endDate,
+          startdate,
+          enddate,
         }),
       });
 
@@ -39,56 +40,62 @@ export default function NewProject() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>New Project Component</h1>
+    <div className='form'>
+      <h1>New Project</h1>
+      <form className='inner-form' onSubmit={handleSubmit}>
+        <label htmlFor="projectName">Project Name:</label>
+        <input
+          type="text"
+          className="form-control"
+          id="projectName"
+          value={projectname}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
 
-      <label htmlFor="projectName">Project Name:</label>
-      <input
-        type="text"
-        id="projectName"
-        value={projectName}
-        onChange={(e) => setProjectName(e.target.value)}
-      />
+        <label htmlFor="projectDescription">Project Description:</label>
+        <input
+          type="text"
+          className="form-control"
+          id="projectDescription"
+          value={projectdescription}
+          onChange={(e) => setProjectDescription(e.target.value)}
+        />
 
-      <label htmlFor="projectDescription">Project Description:</label>
-      <input
-        type="text"
-        id="projectDescription"
-        value={projectDescription}
-        onChange={(e) => setProjectDescription(e.target.value)}
-      />
+        <label htmlFor="status">Status:</label>
+        <select
+          id="status"
+          className="form-control"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="">Select Status</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
 
-      <label htmlFor="status">Status:</label>
-      <select
-        id="status"
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-      >
-        <option value="">Select Status</option>
-        <option value="active">Active</option>
-        <option value="completed">Completed</option>
-        <option value="pending">Pending</option>
-      </select>
+        <label htmlFor="startDate">Start Date:</label>
+        <input
+          type="date"
+          className="form-control"
+          id="startDate"
+          value={startdate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
 
-      <label htmlFor="startDate">Start Date:</label>
-      <input
-        type="date"
-        id="startDate"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-      />
+        <label htmlFor="endDate">End Date:</label>
+        <input
+          type="date"
+          className="form-control"
+          id="endDate"
+          value={enddate || ''}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
 
-      <label htmlFor="endDate">End Date:</label>
-      <input
-        type="date"
-        id="endDate"
-        value={endDate || ''}
-        onChange={(e) => setEndDate(e.target.value)}
-      />      
-
-      <button type="submit">
-        Create Project
-      </button>
-    </form>
+        <button className="btn btn-primary" type="submit">
+          Create Project
+        </button>
+      </form>
+    </div>
   );
 }

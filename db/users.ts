@@ -5,8 +5,8 @@ import { JWT_SECRET } from '../src/utilities/env.js';
 
 export type User = {
   id?: number;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
   username: string;
@@ -14,8 +14,8 @@ export type User = {
 };
 
 export const createUser = async (
-  firstName: string,
-  lastName: string,
+  firstname: string,
+  lastname: string,
   email: string,
   password: string,
   username: string,
@@ -24,11 +24,11 @@ export const createUser = async (
     const hashedPassword = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
       `
-      INSERT INTO users (firstName, lastName, email, password, username)
+      INSERT INTO users (firstname, lastname, email, password, username)
       VALUES($1, $2, $3, $4, $5)
       RETURNING *
       `,
-      [firstName, lastName, email, hashedPassword, username],
+      [firstname, lastname, email, hashedPassword, username],
     );
     return rows[0];
   } catch (err) {
@@ -58,7 +58,10 @@ export const authenticateUser = async (
     if (!isPasswordValid) {
       return undefined;
     }
-    const token = jwt.sign({ id: user.id }, JWT_SECRET);
+    const token = jwt.sign(
+      { id: user.id, username: user.username, email: user.email },
+      JWT_SECRET,
+    );
     return { ...user, token };
   } catch (err) {
     console.error('Error authenticating user:', err);
@@ -94,38 +97,19 @@ export const getUserById = async (id: number): Promise<User | undefined> => {
   }
 };
 
-export const loginToken = async (token: string): Promise<User | undefined> => {
-  try {
-    const { rows } = await pool.query(
-      `
-      SELECT * FROM users
-      WHERE token = $1
-    `,
-      [token],
-    );
-    if (rows.length === 0) {
-      return undefined;
-    }
-    return rows[0];
-  } catch (err) {
-    console.error('Error logging in user:', err);
-    return undefined;
-  }
-};
-
 export const getUserByTeamName = async (
-  teamName: string,
+  teamname: string,
 ): Promise<User | undefined> => {
   try {
     const { rows } = await pool.query(
       `
       SELECT u.*
       FROM users u
-      JOIN teamsUsers tu ON u.id = tu.userId
-      JOIN teams t ON tu.teamId = t.id
-      WHERE t.teamName = $1
+      JOIN teamsusers tu ON u.id = tu.userid
+      JOIN teams t ON tu.teamid = t.id
+      WHERE t.teamname = $1
     `,
-      [teamName],
+      [teamname],
     );
     if (rows.length === 0) {
       return undefined;
@@ -139,34 +123,35 @@ export const getUserByTeamName = async (
 
 export const fetchMyAccountInfo = async (username: string) => {
   try {
-    const { rows: myAccountInfo } = await pool.query(`
-    WITH userTeam AS (
+    const { rows: myAccountInfo } = await pool.query(
+      `
+    WITH userteam AS (
     SELECT 
-      u.id AS userId,
-      u.firstName,
-      u.lastName,
+      u.id AS userid,
+      u.firstname,
+      u.lastname,
       u.email,
       u.username,
-      t.id AS teamId,
-      t.teamName
+      t.id AS teamid,
+      t.teamname
       FROM users u
-      JOIN teamsUsers tu ON u.id = tu.userId
-      JOIN teams t ON tu.teamId = t.id
+      JOIN teamsusers tu ON u.id = tu.userid
+      JOIN teams t ON tu.teamid = t.id
       )
     SELECT 
-      currentUser.firstName AS user_firstName,
-      currentUser.lastName AS user_lastName,
-      currentUser.email AS user_email,
-      currentUser.username AS user_username,
-      currentUser.teamName AS user_teamName,
-      teammate.firstName AS teammate_firstName,
-      teammate.lastName AS teammate_lastName,
-      teammate.email AS teammate_email,
-      teammate.username AS teammate_username
-    FROM userTeam currentUser
-    LEFT JOIN userTeam teammate 
-      ON currentUser.teamId = teammate.teamId
-      AND currentUser.userId <> teammate.userId
+      currentUser.firstname AS userfirstName,
+      currentUser.lastname AS userlastName,
+      currentUser.email AS useremail,
+      currentUser.username AS userusername,
+      currentUser.teamname AS userteamname,
+      teammate.firstname AS teammatefirstName,
+      teammate.lastname AS teammateLastName,
+      teammate.email AS teammateEmail,
+      teammate.username AS teammateUsername
+    FROM userteam currentUser
+    LEFT JOIN userteam teammate 
+      ON currentUser.teamid = teammate.teamid
+      AND currentUser.userid <> teammate.userid
     WHERE currentUser.username = $1;
     `,
       [username],
@@ -181,22 +166,22 @@ export const fetchMyAccountInfo = async (username: string) => {
 
 export const updatingAccountInfo = async (
   id: number,
-  firstName: string,
-  lastName: string,
+  firstname: string,
+  lastname: string,
   email: string,
   password: string,
-  username: string
+  username: string,
 ): Promise<User | undefined> => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
       `
       UPDATE users
-      SET firstName = $1, lastName = $2, email = $3, password = $4, username = $5
+      SET firstname = $1, lastname = $2, email = $3, password = $4, username = $5
       WHERE id = $6
       RETURNING *
       `,
-      [firstName, lastName, email, hashedPassword, username, id]
+      [firstname, lastname, email, hashedPassword, username, id],
     );
     return rows[0];
   } catch (err) {

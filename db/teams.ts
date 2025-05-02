@@ -1,19 +1,24 @@
-import pool from "./pool.js";
+import pool from './pool.js';
 
 type Team = {
   id: number;
-  teamName: string;
+  teamname: string;
   username: string;
-  projectName: string;
-}
+  projectname: string;
+};
 
-export const createTeams = async (teamName: string): Promise<Team | undefined> => {
+export const createTeams = async (
+  teamname: string,
+): Promise<Team | undefined> => {
   try {
-    const { rows } = await pool.query(`
-      INSERT INTO teams (teamName)
+    const { rows } = await pool.query(
+      `
+      INSERT INTO teams (teamname)
       VALUES ($1)
       RETURNING *;
-    `, [teamName]);
+    `,
+      [teamname],
+    );
 
     console.log('Team created:', rows);
     return rows[0];
@@ -22,25 +27,37 @@ export const createTeams = async (teamName: string): Promise<Team | undefined> =
   }
 };
 
-export const createTeamsUser = async (teamName: string, username: string): Promise<Team | undefined> => {
+export const createTeamsUser = async (
+  teamname: string,
+  username: string,
+): Promise<Team | undefined> => {
   try {
-    const { rows: teamId } = await pool.query(`
-      SELECT id FROM teams WHERE teamName = $1;
-    `, [teamName]);
+    const { rows: teamid } = await pool.query(
+      `
+      SELECT id FROM teams WHERE teamname = $1;
+    `,
+      [teamname],
+    );
 
-    const { rows: userId } = await pool.query(`
+    const { rows: userid } = await pool.query(
+      `
       SELECT id FROM users WHERE username = $1;
-    `, [username]);
+    `,
+      [username],
+    );
 
-    if (teamId.length === 0 || userId.length === 0) {
+    if (teamid.length === 0 || userid.length === 0) {
       throw new Error('Team or User not found');
     }
 
-    const { rows } = await pool.query(`
-      INSERT INTO teamsUsers (teamId, userId)
+    const { rows } = await pool.query(
+      `
+      INSERT INTO teamsusers (teamid, userid)
       VALUES ($1, $2)
       RETURNING *;
-    `, [teamId[0].id, userId[0].id]);
+    `,
+      [teamid[0].id, userid[0].id],
+    );
 
     console.log('User added to team:', rows);
     return rows[0];
@@ -49,25 +66,37 @@ export const createTeamsUser = async (teamName: string, username: string): Promi
   }
 };
 
-export const createTeamsProject = async (teamName: string, projectName: string): Promise<Team | undefined> => {
+export const createTeamsProject = async (
+  teamname: string,
+  projectname: string,
+): Promise<Team | undefined> => {
   try {
-    const { rows: teamId } = await pool.query(`
-      SELECT id FROM teams WHERE teamName = $1;
-    `, [teamName]);
+    const { rows: teamid } = await pool.query(
+      `
+      SELECT id FROM teams WHERE teamname = $1;
+    `,
+      [teamname],
+    );
 
-    const { rows: projectId } = await pool.query(`
-      SELECT id FROM projects WHERE projectName = $1;
-    `, [projectName]);
+    const { rows: projectid } = await pool.query(
+      `
+      SELECT id FROM projects WHERE projectname = $1;
+    `,
+      [projectname],
+    );
 
-    if (teamId.length === 0 || projectId.length === 0) {
+    if (teamid.length === 0 || projectid.length === 0) {
       throw new Error('Team or Project not found');
     }
 
-    const { rows } = await pool.query(`
-      INSERT INTO projectsTeams (teamId, projectId)
+    const { rows } = await pool.query(
+      `
+      INSERT INTO projectsteams (teamid, projectid)
       VALUES ($1, $2)
       RETURNING *;
-    `, [teamId[0].id, projectId[0].id]);
+    `,
+      [teamid[0].id, projectid[0].id],
+    );
 
     console.log('Project added to team:', rows);
     return rows[0];
@@ -76,7 +105,9 @@ export const createTeamsProject = async (teamName: string, projectName: string):
   }
 };
 
-export const getAllTeams = async (): Promise<{ team_name: string }[] | undefined> => {
+export const getAllTeams = async (): Promise<
+  { team_name: string }[] | undefined
+> => {
   try {
     const { rows: retrievedTeams } = await pool.query(`
       SELECT * FROM teams;
@@ -88,34 +119,40 @@ export const getAllTeams = async (): Promise<{ team_name: string }[] | undefined
     return undefined;
   }
 };
-;
-
-export const retrieveTeamsByUsername = async (username: string): Promise<Team[] | undefined> => {
+export const retrieveTeamsByUsername = async (
+  username: string,
+): Promise<Team[] | undefined> => {
   try {
-    const { rows: retrievedTeams } = await pool.query(`
-      SELECT t.teamName, t.id
+    const { rows: retrievedTeams } = await pool.query(
+      `
+      SELECT t.teamname, t.id
       FROM teams t
-      JOIN teamsUsers tu ON t.id = tu.teamId
-      JOIN users u ON tu.userId = u.id
+      JOIN teamsusers tu ON t.id = tu.teamid
+      JOIN users u ON tu.userid = u.id
       WHERE u.username = $1;
-    `, [username]);
+    `,
+      [username],
+    );
 
-    return retrievedTeams.map(item => ({
+    return retrievedTeams.map((item) => ({
       id: item.id,
-      teamName: item.teamName,
+      teamname: item.teamname,
       username: username,
-      projectName: ''
+      projectname: '',
     }));
   } catch (err) {
     console.log('Error retrieving teams for username:', err);
   }
 };
 
-export const deleteTeams = async (teamName: string) => {
+export const deleteTeams = async (teamname: string) => {
   try {
-    const { rows: deletedTeam } = await pool.query(`
-      DELETE FROM teams WHERE teamName = $1 RETURNING *;
-    `, [teamName]);
+    const { rows: deletedTeam } = await pool.query(
+      `
+      DELETE FROM teams WHERE teamname = $1 RETURNING *;
+    `,
+      [teamname],
+    );
 
     if (!deletedTeam.length) {
       throw new Error('Team not found');
@@ -128,14 +165,17 @@ export const deleteTeams = async (teamName: string) => {
   }
 };
 
-export const updateTeams = async (teamName: string, newTeamName: string) => {
+export const updateTeams = async (teamname: string, newteamname: string) => {
   try {
-    const { rows } = await pool.query(`
+    const { rows } = await pool.query(
+      `
       UPDATE teams
-      SET teamName = $1
-      WHERE teamName = $2
+      SET teamname = $1
+      WHERE teamname = $2
       RETURNING *;
-    `, [newTeamName, teamName]);
+    `,
+      [newteamname, teamname],
+    );
 
     if (!rows.length) {
       throw new Error('Team not found');

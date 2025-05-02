@@ -19,17 +19,17 @@ export const getDashboardPage = (req: Request, res: Response) => {
 
 export const getDashboardInfo = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
+    const userid = req.user?.id;
+    if (!userid) {
       res.status(400).json({ error: 'User ID is missing or invalid.' });
       return;
     }
 
-    const projects = await getProjectsByUsers(userId);
-    const tasks = await getTasksByUserId(userId);
+    const projects = await getProjectsByUsers(userid);
+    const tasks = await getTasksByUserId(userid);
 
-    const taskStatusCounts = await getMyTasksPercentage(userId);
-    const projectStatusCounts = await getProjectsByPercentage(userId);
+    const taskStatusCounts = await getMyTasksPercentage(userid);
+    const projectStatusCounts = await getProjectsByPercentage(userid);
 
     const dashboardData = {
       userProjects: projects,

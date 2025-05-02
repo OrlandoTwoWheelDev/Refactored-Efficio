@@ -7,8 +7,8 @@ export const getRegisterPage = (req: Request, res: Response) => {
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, password, username } = req.body;
-    const user = await createUser(firstName, lastName, email, password, username);
+    const { firstname, lastname, email, password, username } = req.body;
+    const user = await createUser(firstname, lastname, email, password, username);
     if (!user) {
       res.status(400).json({ error: 'Failed to register user.' });
       return;

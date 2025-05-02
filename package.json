@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf dist node_modules && npm install",
+    "clean": "rm -rf dist && rm -rf node_modules && npm install",
     "dev": "vite",
     "preview": "vite preview",
     "lint": "eslint .",
     "start": "node dist/src/server.js",
-    "build": "tsc --project tsconfig.json",
+    "build": "tsc --project tsconfig.json && vite build",
     "watch": "tsc --watch",
     "postinstall": "npm run build",
     "refresh": "npm run clean && npm run build && npm run start"

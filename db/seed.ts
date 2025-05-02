@@ -9,37 +9,38 @@ import { createTasks } from "./tasks.js";
 
 const dropTables = async () => {
   await pool.query(`
-    DROP TABLE IF EXISTS messages, tasks, projectsTeams, teamsUsers, projects, teams, users CASCADE;
+    DROP TABLE IF EXISTS users, teams, projects, tasks, teamsusers, projectsteams, messages CASCADE;
   `);
   console.log("🧹 Dropped all tables");
 };
 
 const createTables = async () => {
+  try {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
-      firstName VARCHAR(50) NOT NULL,
-      lastName VARCHAR(50) NOT NULL,
+      firstname VARCHAR(50) NOT NULL,
+      lastname VARCHAR(50) NOT NULL,
       email VARCHAR(100) NOT NULL UNIQUE,
       username VARCHAR(50) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       token VARCHAR(255),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS teams (
       id SERIAL PRIMARY KEY,
-      teamName VARCHAR(50) NOT NULL UNIQUE,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      teamname VARCHAR(50) NOT NULL UNIQUE,
+      createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS projects (
       id SERIAL PRIMARY KEY,
-      projectName VARCHAR(50) NOT NULL UNIQUE,
-      description TEXT NOT NULL,
+      projectname VARCHAR(50) NOT NULL UNIQUE,
+      projectdescription TEXT NOT NULL,
       status VARCHAR(20) DEFAULT 'in-progress',
-      startDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      endDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      startdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      enddate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS tasks (
@@ -47,34 +48,37 @@ const createTables = async () => {
       username VARCHAR(50) NOT NULL,
       title VARCHAR(50) NOT NULL,
       description TEXT NOT NULL,
-      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      projectId INTEGER REFERENCES projects(id) ON DELETE CASCADE
+      userid INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      projectid INTEGER REFERENCES projects(id) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS teams_users (
+    CREATE TABLE IF NOT EXISTS teamsusers (
       id SERIAL PRIMARY KEY,
-      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      teamid INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      userid INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE TABLE IF NOT EXISTS projects_teams (
+    CREATE TABLE IF NOT EXISTS projectsteams (
       id SERIAL PRIMARY KEY,
-      projectId INTEGER REFERENCES projects(id) ON DELETE CASCADE,
-      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      projectid INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      teamid INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
-      userId INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      teamId INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      userid INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      teamid INTEGER REFERENCES teams(id) ON DELETE CASCADE,
       content TEXT NOT NULL,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
   console.log("🏗️ Created all tables");
+  }catch (err) {
+    console.error("❌ Error creating tables:", err);
+  }
 };
 
 const seedUsers = async () => {
@@ -96,7 +100,7 @@ const seedTasks = async () => {
     createTasks('Task 1', 'in-progress', 'johndoe', 1),
     createTasks('Task 2', 'completed', 'janesmith', 2),
   ]);
-}
+};
 
 const seedTeams = async () => {
   return await Promise.all([
@@ -106,15 +110,14 @@ const seedTeams = async () => {
 };
 
 const seedRelationships = async (users: User[], teams: Team[], projects: Project[]): Promise<void> => {
-  await createTeamsUser(teams[0].teamName, users[0].username);
-  await createTeamsUser(teams[1].teamName, users[1].username);
+  await createTeamsUser(teams[0].teamname, users[0].username);
+  await createTeamsUser(teams[1].teamname, users[1].username);
 
-  await createTeamsProject(teams[0].teamName, projects[0].projectName);
-  await createTeamsProject(teams[1].teamName, projects[1].projectName);
+  await createTeamsProject(teams[0].teamname, projects[0].projectname);
+  await createTeamsProject(teams[1].teamname, projects[1].projectname);
 
   await createTasks('Task 1', 'Basic setup', users[0].username, projects[0].id!);
   await createTasks('Task 2', 'Final polish', users[1].username, projects[1].id!);
-
 };
 
 const runSeed = async () => {

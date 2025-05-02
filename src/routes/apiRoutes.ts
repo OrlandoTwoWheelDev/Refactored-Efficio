@@ -14,33 +14,32 @@ const router = Express.Router();
 router.post('/login', loginUser);
 router.post('/register', registerUser);
 
-router.use(authToken);
 
-router.get('/dashboard', getDashboardInfo);
+router.get('/dashboard', authToken, getDashboardInfo);
 
-router.get('/projects', getProjects);
-router.get('/projects/team/:teamId', getProjectsByTeam);
-router.post('/projects', createProject);
-router.put('/projects/:id', updateProject);
-router.delete('/projects/:id', deleteProject);
+router.get('/projects', authToken, getProjects);
+router.get('/projects/team/:teamId', authToken, getProjectsByTeam);
+router.post('/projects', authToken, createProject);
+router.put('/projects/:id', authToken, updateProject);
+router.delete('/projects/:id', authToken, deleteProject);
 
-router.get('/tasks', getTasks);
-router.get('/tasks/project/:projectId', getTasksByProject);
-router.get('/tasks/team/:teamId', getTasksByTeam);
-router.post('/tasks', createTask);
-router.put('/tasks/:id', updateTask);
-router.delete('/tasks/:id', deleteTask);
+router.get('/tasks', authToken, getTasks);
+router.get('/tasks/project/:projectId', authToken, getTasksByProject);
+router.get('/tasks/team/:teamId', authToken, getTasksByTeam);
+router.post('/tasks', authToken, createTask);
+router.put('/tasks/:id', authToken, updateTask);
+router.delete('/tasks/:id', authToken, deleteTask);
 
-router.get('/chat', getChat);
+router.get('/chat', authToken, getChat);
 
-router.get('/myaccount', getAccountInfo);
-router.put('/myaccount', updateAccountInfo);
-router.delete('/myaccount', deleteAccountInfo);
+router.get('/myaccount', authToken, getAccountInfo);
+router.put('/myaccount', authToken, updateAccountInfo);
+router.delete('/myaccount', authToken, deleteAccountInfo);
 
-router.get('/team', getTeams);
-router.post('/team', createTeam);
-router.post('/team/:teamId/user/:userId', assignUserToTeam);
-router.put('/team/:teamId', updateTeam);
-router.delete('/team/:teamId', deleteTeam);
+router.get('/team', authToken, getTeams);
+router.post('/team', authToken, createTeam);
+router.post('/team/:teamId/user/:userId', authToken, assignUserToTeam);
+router.put('/team/:teamId', authToken, updateTeam);
+router.delete('/team/:teamId', authToken, deleteTeam);
 
 export default router;

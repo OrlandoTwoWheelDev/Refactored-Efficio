@@ -17,14 +17,12 @@ router.get('/', getHomePage);
 router.get('/login', getLoginPage);
 router.get('/register', getRegisterPage);
 
-router.use(authToken);
-
 // Protected Routes
-router.get('/dashboard', getDashboardPage);
-router.get('/newproject', getNewProjectPage);
-router.get('/newtask', getNewTaskPage);
-router.get('/chat', getChatPage);
-router.get('/myaccount', getMyAccountPage);
-router.get('/team', getTeamPage);
+router.get('/dashboard', authToken, getDashboardPage);
+router.get('/newproject', authToken, getNewProjectPage);
+router.get('/newtask', authToken, getNewTaskPage);
+router.get('/chat', authToken, getChatPage);
+router.get('/myaccount', authToken, getMyAccountPage);
+router.get('/team', authToken, getTeamPage);
 
 export default router;

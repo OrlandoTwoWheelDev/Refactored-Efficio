@@ -17,8 +17,8 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, username, projectId } = req.body;
-    const task = await createTasks(title, description, username, projectId);
+    const { title, description, username, projectid } = req.body;
+    const task = await createTasks(title, description, username, projectid);
     if (!task) {
       res.status(400).json({ error: 'Failed to create task.' });
       return;
@@ -75,7 +75,7 @@ export const getTasksByProject = async (req: Request, res: Response): Promise<vo
 
 export const getTasksByTeam = async (req: Request, res: Response): Promise<void> => {
   try {
-    const tasks = await getTasksByTeamId(Number(req.params.teamId));
+    const tasks = await getTasksByTeamId(Number(req.params.teamid));
     if (!tasks) {
       res.status(400).json({ error: 'Failed to fetch tasks by team.' });
       return;
