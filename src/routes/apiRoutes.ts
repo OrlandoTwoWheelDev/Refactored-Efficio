@@ -7,8 +7,14 @@ import { registerUser } from "../controllers/register.js";
 import { getAccountInfo, updateAccountInfo, deleteAccountInfo } from "../controllers/myaccount.js";
 import { getDashboardInfo } from "../controllers/dashboard.js";
 import { getTeams, createTeam, updateTeam, deleteTeam, assignUserToTeam } from "../controllers/team.js";
+import { authToken } from "../../middleware/authToken.js";
 
 const router = Express.Router();
+
+router.post('/login', loginUser);
+router.post('/register', registerUser);
+
+router.use(authToken);
 
 router.get('/dashboard', getDashboardInfo);
 
@@ -36,10 +42,5 @@ router.post('/team', createTeam);
 router.post('/team/:teamId/user/:userId', assignUserToTeam);
 router.put('/team/:teamId', updateTeam);
 router.delete('/team/:teamId', deleteTeam);
-
-router.post('/login', loginUser);
-
-router.post('/register', registerUser);
-
 
 export default router;
