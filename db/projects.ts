@@ -1,6 +1,5 @@
 import pool from './pool.js';
-import pkg from 'validator';
-const { isUUID } = pkg;
+
 
 type Project = {
   id: number;
@@ -9,6 +8,7 @@ type Project = {
   status: string;
   startdate: Date;
   enddate: Date;
+  userid: number;
 };
 
 export const createProjects = async (
@@ -16,15 +16,16 @@ export const createProjects = async (
   projectdescription: string,
   status: string,
   startdate: Date,
-  enddate: Date
+  enddate: Date,
+  userid: number
 ): Promise<Project> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO projects (projectname, projectdescription, status, startdate, enddate)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO projects (projectname, projectdescription, status, startdate, enddate, userid)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `,
-      [projectname, projectdescription, status, startdate, enddate]
+      [projectname, projectdescription, status, startdate, enddate, userid]
     );
     return rows[0];
   } catch (error) {
@@ -46,19 +47,19 @@ export const getAllProjects = async (): Promise<Project[]> => {
 };
 
 export const getProjectsByTeams = async (
-  teamId: string
+  teamid: string
 ): Promise<Project[] | undefined> => {
   try {
-    if (!isUUID(teamId)) {
-      throw new Error(`Invalid UUID format: ${teamId}`);
+    if (!(teamid)) {
+      throw new Error(`Invalid UUID format: ${teamid}`);
     }
 
     const { rows } = await pool.query(`
       SELECT projects.* FROM projects
-      JOIN projectsTeams ON projects.id = projectsTeams.projectId
-      WHERE projectsTeams.teamId = $1;
+      JOIN projectsteams ON projects.id = projectsteams.projectid
+      WHERE projectsteams.teamid = $1;
     `,
-      [teamId]
+      [teamid]
     );
 
     return rows;
@@ -69,20 +70,20 @@ export const getProjectsByTeams = async (
 };
 
 export const getProjectsByUsers = async (
-  userId: number
+  userid: number
 ): Promise<Project[] | undefined> => {
   try {
-    if (!isUUID(userId.toString())) {
-      throw new Error(`Invalid UUID format: ${userId}`);
+    if (!(userid.toString())) {
+      throw new Error(`Invalid UUID format: ${userid}`);
     }
 
     const { rows } = await pool.query(`
       SELECT projects.* FROM projects
-      JOIN projectsTeams ON projects.id = projectsTeams.projectId
-      JOIN teamsUsers ON projectsTeams.teamId = teamsUsers.teamId
-      WHERE teamsUsers.userId = $1;
+      JOIN projectsteams ON projects.id = projectsteams.projectid
+      JOIN teamsusers ON projectsteams.teamid = teamsusers.teamid
+      WHERE teamsusers.userid = $1;
     `,
-      [userId]
+      [userid]
     );
 
     return rows;
@@ -99,10 +100,10 @@ export const getProjectsByUsername = async (
     const { rows } = await pool.query(`
       SELECT DISTINCT p.*
       FROM projects p
-      JOIN projectsTeams pt ON p.id = pt.projectId
-      JOIN teams t ON pt.teamId = t.id
-      JOIN teamsUsers tu ON t.id = tu.teamId
-      JOIN users u ON tu.userId = u.id
+      JOIN projectsteams pt ON p.id = pt.projectid
+      JOIN teams t ON pt.teamid = t.id
+      JOIN teamsusers tu ON t.id = tu.teamid
+      JOIN users u ON tu.userid = u.id
       WHERE u.username = $1;
     `,
       [username]
@@ -116,19 +117,19 @@ export const getProjectsByUsername = async (
 };
 
 export const getProjectsByPercentage = async(
-  userId: number
+  userid: number
 ): Promise<Project[] | undefined> => {
   try {
     const { rows } = await pool.query(`
       SELECT DISTINCT p.*
       FROM projects p
-      JOIN projectsTeams pt ON p.id = pt.projectId
-      JOIN teams t ON pt.teamId = t.id
-      JOIN teamsUsers tu ON t.id = tu.teamId
-      JOIN users u ON tu.userId = u.id
+      JOIN projectsteams pt ON p.id = pt.projectid
+      JOIN teams t ON pt.teamid = t.id
+      JOIN teamsusers tu ON t.id = tu.teamid
+      JOIN users u ON tu.userid = u.id
       WHERE u.id = $1;
     `,
-      [userId]
+      [userid]
     );
 
     return rows;
@@ -139,25 +140,25 @@ export const getProjectsByPercentage = async(
 }
 
 export const updateProjects = async (
-  projectId: string,
-  projectName: string,
-  projectDescription: string,
+  projectid: string,
+  projectname: string,
+  projectdescription: string,
   status: string,
-  startDate: Date,
-  endDate: Date
+  startdate: Date,
+  enddate: Date
 ): Promise<Project | undefined> => {
   try {
-    if (!isUUID(projectId)) {
-      throw new Error(`Invalid UUID format: ${projectId}`);
+    if (!(projectid)) {
+      throw new Error(`Invalid UUID format: ${projectid}`);
     }
 
     const { rows } = await pool.query(`
       UPDATE projects
-      SET projectName = $1, projectDescription = $2, status = $3, startDate = $4, endDate = $5
+      SET projectname = $1, projectdescription = $2, status = $3, startdate = $4, enddate = $5
       WHERE id = $6
       RETURNING *;
     `,
-      [projectName, projectDescription, status, startDate, endDate, projectId]
+      [projectname, projectdescription, status, startdate, enddate, projectid]
     );
 
     return rows[0];
@@ -168,11 +169,11 @@ export const updateProjects = async (
 };
 
 export const deleteExistingProject = async (
-  projectId: string
+  projectid: string
 ): Promise<Project | undefined> => {
   try {
-    if (!isUUID(projectId)) {
-      throw new Error(`Invalid UUID format: ${projectId}`);
+    if (!(projectid)) {
+      throw new Error(`Invalid UUID format: ${projectid}`);
     }
 
     const { rows } = await pool.query(`
@@ -180,7 +181,7 @@ export const deleteExistingProject = async (
       WHERE id = $1
       RETURNING *;
     `,
-      [projectId]
+      [projectid]
     );
 
     return rows[0];

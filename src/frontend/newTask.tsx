@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+const userid = localStorage.getItem('userid');
+
 const NewProject = () => {
   // Task state variables
   const [title, setTitle] = useState('');
@@ -24,11 +26,12 @@ const NewProject = () => {
         },
         body: JSON.stringify({
           title,
-          taskdescription,
+          description: taskdescription,
           status,
           startdate,
           enddate,
-          projectId: selectedProject, // Make sure to send the selected project ID
+          projectid: selectedProject,
+          userid: userid,
         }),
       });
 
@@ -38,10 +41,10 @@ const NewProject = () => {
         console.log('✅ Task created successfully:', data);
         setTitle('');
         setTaskDescription('');
-        setStatus(''); // Reset status after success
-        setStartDate(''); // Reset start date
-        setEndDate(''); // Reset end date
-        setSelectedProject(''); // Reset selected project
+        setStatus('');
+        setStartDate('');
+        setEndDate('');
+        setSelectedProject('');
       } else {
         console.error('❌ Error creating task:', data);
       }
@@ -50,7 +53,6 @@ const NewProject = () => {
     }
   };
 
-  // Fetch projects for dropdown
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -74,7 +76,7 @@ const NewProject = () => {
     };
 
     fetchProjects();
-  }, []); // Only fetch projects once on mount
+  }, []);
 
   // Handle project selection
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -94,11 +96,11 @@ const NewProject = () => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <label htmlFor="taskDescription">Task Description:</label>
+        <label htmlFor="taskdescription">Task Description:</label>
         <input
           type="text"
           className="form-control"
-          id="taskDescription"
+          id="taskdescription"
           value={taskdescription}
           onChange={(e) => setTaskDescription(e.target.value)}
         />
@@ -126,7 +128,7 @@ const NewProject = () => {
           <option value="">-- Select a Project --</option>
           {projects.map((project) => (
             <option key={project.id} value={project.id}>
-              {project.projectName}
+              {project.projectname ?? 'Untitled Project'}
             </option>
           ))}
         </select>

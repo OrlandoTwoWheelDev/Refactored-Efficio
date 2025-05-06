@@ -17,8 +17,26 @@ export default function MyAccount() {
     fetchAccountInfo();
   }, []);
 
-  const handleUpdate = () => {
-    console.log("Update Account");
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch("/api/myaccount", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountInfo),
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setAccountInfo(updatedData);
+        console.log("Account updated successfully");
+      } else {
+        console.error("Failed to update account");
+      }
+    } catch (error) {
+      console.error("Error updating account", error);
+    }
   };
 
   const handleDelete = async () => {

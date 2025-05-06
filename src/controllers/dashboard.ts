@@ -26,10 +26,14 @@ export const getDashboardInfo = async (req: Request, res: Response): Promise<voi
     }
 
     const projects = await getProjectsByUsers(userid);
+    console.log('Projects:', projects);
     const tasks = await getTasksByUserId(userid);
+    console.log('Tasks:', tasks);
 
     const taskStatusCounts = await getMyTasksPercentage(userid);
+    console.log('Task Status Counts:', taskStatusCounts);
     const projectStatusCounts = await getProjectsByPercentage(userid);
+    console.log('Project Status Counts:', projectStatusCounts);
 
     const dashboardData = {
       userProjects: projects,

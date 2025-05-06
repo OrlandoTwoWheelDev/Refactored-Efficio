@@ -30,18 +30,27 @@ export const getProjectsByTeam = async (req: Request, res: Response) => {
 
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { projectname, projectdescription, status, startdate, enddate } = req.body;
-    const project = await createProjects(projectname, projectdescription, status, startdate, enddate);
-    if (!project) {
-      res.status(400).json({ error: 'Failed to create project.' });
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized: User information is missing.' });
       return;
     }
-    res.status(201).json(project);
+
+    const userid = req.user.id;
+    console.log('User ID:', userid);
+    const { projectname, projectdescription, status, startdate, enddate } = req.body;
+    console.log({ projectname, projectdescription, status, startdate, enddate, userid });
+    const newProject = await createProjects(
+      projectname, projectdescription, status, startdate, enddate, userid
+    );
+
+    res.status(201).json(newProject);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error while creating project.' });
   }
 };
+
+
 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   try {

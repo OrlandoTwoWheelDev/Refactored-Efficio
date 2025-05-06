@@ -17,7 +17,6 @@ const Dashboard = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           },
         });
@@ -25,14 +24,27 @@ const Dashboard = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
+        
+        // Fallback if project data is empty or invalid
+        if (!Array.isArray(data.projectStatusCounts) || data.projectStatusCounts.length === 0) {
+          data.projectStatusCounts = [{ name: 'No Data', percentage: 0 }];
+        }
+  
+        // Fallback if task data is not an array
+        if (!Array.isArray(data.taskStatusCounts)) {
+          data.taskStatusCounts = [{ name: 'No Tasks', completionPercentage: 0 }];
+        }
+        
+        console.log('Dashboard data:', data); // <-- Log the data
         setDashboardData(data);
       } catch (error) {
         setError(error instanceof Error ? error.message : 'An unknown error occurred');
       }
     };
-
+  
     fetchDashboardData();
   }, []);
+  
 
   return (
     <div>

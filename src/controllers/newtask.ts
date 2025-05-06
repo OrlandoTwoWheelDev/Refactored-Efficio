@@ -17,8 +17,8 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, username, projectid } = req.body;
-    const task = await createTasks(title, description, username, projectid);
+    const { title, description, status, projectid, startdate, enddate, userid } = req.body;
+    const task = await createTasks(title, description, status, projectid, startdate, enddate, userid);
     if (!task) {
       res.status(400).json({ error: 'Failed to create task.' });
       return;

@@ -1,6 +1,23 @@
 import React from 'react';
 import { Pie, Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
+ChartJS.register(
+  ArcElement,       // For Pie/Doughnut charts
+  BarElement,       // For Bar charts
+  CategoryScale,    // X axis
+  LinearScale,      // Y axis
+  Tooltip,
+  Legend
+);
 
 interface DashboardChartProps {
   projectData: { name: string; percentage: number }[];
@@ -8,6 +25,8 @@ interface DashboardChartProps {
 }
 
 const DashboardChart = ({ projectData = [], taskData = [] }: DashboardChartProps) => {
+  console.log('Project Data:', projectData);
+  console.log('Task Data:', taskData);
   const pieData = {
     labels: projectData.map((project) => project.name),
     datasets: [
@@ -18,12 +37,13 @@ const DashboardChart = ({ projectData = [], taskData = [] }: DashboardChartProps
     ],
   };
 
+  const safeTaskData = Array.isArray(taskData) ? taskData : [];
   const barData = {
-    labels: taskData.map((task) => task.name),
+    labels: safeTaskData.map((task) => task.name),
     datasets: [
       {
         label: 'Task Completion',
-        data: taskData.map((task) => task.completionPercentage),
+        data: safeTaskData.map((task) => task.completionPercentage),
         backgroundColor: '#98c5e1',
       },
     ],

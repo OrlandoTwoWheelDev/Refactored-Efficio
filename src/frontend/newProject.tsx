@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { use, useState } from 'react';
 
 export default function NewProject() {
   const [projectname, setProjectName] = useState('');
@@ -21,7 +21,7 @@ export default function NewProject() {
           projectdescription,
           status,
           startdate,
-          enddate,
+          enddate
         }),
       });
 

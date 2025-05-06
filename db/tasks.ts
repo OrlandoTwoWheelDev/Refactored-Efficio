@@ -2,20 +2,22 @@ import pool from "./pool.js";
 
 export type Task = {
   id: number;
-  username: string;
+  status: string;
   title: string;
   description: string;
-  userid: number;
   projectid: number;
+  startdate: Date;
+  enddate: Date;
+  userid: number;
 };
 
-export const createTasks = async (title: string, description: string, username: string, projectid: number): Promise<Task | undefined> => {
+export const createTasks = async (title: string, description: string, status: string, projectid: number, startdate: Date, enddate: Date, userid: number): Promise<Task | undefined> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO tasks (title, description, username, projectid)
-      VALUES($1, $2, $3, $4)
+      INSERT INTO tasks (title, description, status, projectid, startdate, enddate, userid)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
-    `, [title, description, username, projectid]);
+    `, [title, description, status, projectid, startdate, enddate, userid]);
     return rows[0];
   } catch (err) {
     console.error('Error creating task:', err);
