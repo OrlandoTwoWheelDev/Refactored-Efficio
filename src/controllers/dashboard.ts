@@ -18,6 +18,7 @@ export const getDashboardPage = (req: Request, res: Response) => {
 };
 
 export const getDashboardInfo = async (req: Request, res: Response): Promise<void> => {
+  console.log('Fetching dashboard data...');
   try {
     const userid = req.user?.id;
     if (!userid) {
@@ -41,7 +42,7 @@ export const getDashboardInfo = async (req: Request, res: Response): Promise<voi
       taskStatusCounts,
       projectStatusCounts,
     };
-
+    console.log('Dashboard data:', dashboardData);
     res.status(200).json(dashboardData);
   } catch (error) {
     console.error('Error fetching dashboard data:', error);

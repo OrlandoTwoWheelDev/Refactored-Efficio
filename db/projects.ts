@@ -78,10 +78,8 @@ export const getProjectsByUsers = async (
     }
 
     const { rows } = await pool.query(`
-      SELECT projects.* FROM projects
-      JOIN projectsteams ON projects.id = projectsteams.projectid
-      JOIN teamsusers ON projectsteams.teamid = teamsusers.teamid
-      WHERE teamsusers.userid = $1;
+      SELECT * FROM projects
+      WHERE userid = $1;
     `,
       [userid]
     );
@@ -116,28 +114,41 @@ export const getProjectsByUsername = async (
   }
 };
 
-export const getProjectsByPercentage = async(
-  userid: number
-): Promise<Project[] | undefined> => {
+export const getProjectsByPercentage = async (userid: number) => {
   try {
-    const { rows } = await pool.query(`
-      SELECT DISTINCT p.*
-      FROM projects p
-      JOIN projectsteams pt ON p.id = pt.projectid
-      JOIN teams t ON pt.teamid = t.id
-      JOIN teamsusers tu ON t.id = tu.teamid
-      JOIN users u ON tu.userid = u.id
-      WHERE u.id = $1;
-    `,
-      [userid]
-    );
+    const { rows: results } = await pool.query(`
+      SELECT 
+        ROUND(
+          (COUNT(CASE WHEN p.status = 'active' THEN 1 END) * 100.0) / COUNT(*),
+          1
+        ) AS activepercentage,
+        ROUND(
+          (COUNT(CASE WHEN p.status = 'pending' THEN 1 END) * 100.0) / COUNT(*),
+          1
+        ) AS pendingpercentage,
+        ROUND(
+          (COUNT(CASE WHEN p.status = 'completed' THEN 1 END) * 100.0) / COUNT(*),
+          1
+        ) AS completedpercentage
+      FROM 
+        projects p
+      WHERE 
+        p.userid = $1;
+    `, [userid]);
 
-    return rows;
-  } catch (error) {
-    console.error('Project Error - getProjectsByPercentage:', error);
-    return undefined;
+    return [
+      { name: "Active", completionPercentage: results[0]?.activepercentage || 0 },
+      { name: "Pending", completionPercentage: results[0]?.pendingpercentage || 0 },
+      { name: "Completed", completionPercentage: results[0]?.completedpercentage || 0 },
+    ];
+
+  } catch (err) {
+    console.error('Error calculating project percentages:', err);
+    return [];
   }
-}
+};
+
+
 
 export const updateProjects = async (
   projectid: string,

@@ -14,14 +14,14 @@ export default function NewProject() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({
           projectname,
           projectdescription,
           status,
           startdate,
-          enddate
+          enddate,
         }),
       });
 
@@ -40,9 +40,22 @@ export default function NewProject() {
   };
 
   return (
-    <div className='form'>
+    <div className="form">
+      <style>
+        {`
+          .form {
+            background-image: url('../images/wallpaperflare.com_wallpaper (12).jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            height: 100dvh;
+            width: 100%;
+          }
+        `}
+      </style>
       <h1>New Project</h1>
-      <form className='inner-form' onSubmit={handleSubmit}>
+      <form className="inner-form" onSubmit={handleSubmit}>
         <label htmlFor="projectName">Project Name:</label>
         <input
           type="text"
