@@ -39,64 +39,26 @@ const App = () => {
 
   return (
     <>
-      <nav className="container my-4">
-        <div className="row g-2 justify-content-center">
-          <div className="col-auto">
-            <Link to="/dashboard" className="btn btn-primary">
-              Dashboard
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/newproject" className="btn btn-primary">
-              New Project
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/newtask" className="btn btn-primary">
-              New Task
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/chat" className="btn btn-primary">
-              Chat
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/myaccount" className="btn btn-primary">
-              My Account
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/team" className="btn btn-primary">
-              Team
-            </Link>
-          </div>
-          {isLoggedIn ? (
-            <div className="col-auto">
-              <button onClick={handleLogout} className="btn btn-danger">
-                Logout
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="col-auto">
-                <Link to="/" className="btn btn-primary">
-                  Home
-                </Link>
-              </div>
-              <div className="col-auto">
-                <Link to="/login" className="btn btn-primary">
-                  Login
-                </Link>
-              </div>
-              <div className="col-auto">
-                <Link to="/register" className="btn btn-primary">
-                  Register
-                </Link>
-              </div>
-            </>
-          )}
-        </div>
+      <nav className="main-nav">
+        <div className="stars" />
+        <div className="twinkling" />
+        {isLoggedIn ? (
+          <>
+            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/newproject">New Project</Link>
+            <Link to="/newtask">New Task</Link>
+            <Link to="/chat">Chat</Link>
+            <Link to="/myaccount">My Account</Link>
+            <Link to="/team">Team</Link>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/">Home</Link>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
       </nav>
 
       <Routes>

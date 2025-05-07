@@ -38,18 +38,19 @@ const createTables = async () => {
       id SERIAL PRIMARY KEY,
       projectname VARCHAR(50) NOT NULL UNIQUE,
       projectdescription TEXT NOT NULL,
-      status VARCHAR(20) DEFAULT 'in-progress',
+      status VARCHAR(20) DEFAULT 'active',
       startdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       enddate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS tasks (
       id SERIAL PRIMARY KEY,
-      username VARCHAR(50) NOT NULL,
       title VARCHAR(50) NOT NULL,
       description TEXT NOT NULL,
-      userid INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      projectid INTEGER REFERENCES projects(id) ON DELETE CASCADE
+      status VARCHAR(20) DEFAULT 'active',
+      projectid INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      startdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      enddate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS teamsusers (
@@ -90,15 +91,15 @@ const seedUsers = async () => {
 
 const seedProjects = async () => {
   return await Promise.all([
-    createProjects('New Beginnings', 'Fresh TS start', 'in-progress', new Date(), new Date()),
-    createProjects('Blood and Steel', 'You have been baptized in fire and blood and have come out steel!', 'in-progress', new Date(), new Date()),
+    createProjects('New Beginnings', 'Fresh TS start', 'in-progress', new Date(), new Date(), 1),
+    createProjects('Blood and Steel', 'You have been baptized in fire and blood and have come out steel!', 'in-progress', new Date(), new Date(), 2),
   ]);
 };
 
 const seedTasks = async () => {
   return await Promise.all([
-    createTasks('Task 1', 'in-progress', 'johndoe', 1),
-    createTasks('Task 2', 'completed', 'janesmith', 2),
+    createTasks('Task 1', 'Basic setup', 'in-progress', 1, new Date(), new Date(), 1),
+    createTasks('Task 2', 'Final polish', 'in-progress', 2, new Date(), new Date(), 2),
   ]);
 };
 
@@ -116,8 +117,8 @@ const seedRelationships = async (users: User[], teams: Team[], projects: Project
   await createTeamsProject(teams[0].teamname, projects[0].projectname);
   await createTeamsProject(teams[1].teamname, projects[1].projectname);
 
-  await createTasks('Task 1', 'Basic setup', users[0].username, projects[0].id!);
-  await createTasks('Task 2', 'Final polish', users[1].username, projects[1].id!);
+  await createTasks('Task 1', 'Basic setup', 'in-progress', projects[0].id!, new Date(), new Date(), users[0].id!);
+  await createTasks('Task 2', 'Final polish', 'in-progress', projects[1].id!, new Date(), new Date(), users[1].id!);
 };
 
 const runSeed = async () => {

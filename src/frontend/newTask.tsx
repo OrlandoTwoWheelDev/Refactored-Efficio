@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
 
-const NewProject = () => {
-  // Task state variables
+export default function NewTask() {
   const [title, setTitle] = useState('');
   const [taskdescription, setTaskDescription] = useState('');
-  const [status, setStatus] = useState(''); // Added state for status
+  const [status, setStatus] = useState('');
   const [startdate, setStartDate] = useState('');
-  const [enddate, setEndDate] = useState<string | null>(''); // Handle the end date properly
+  const [enddate, setEndDate] = useState<string | null>('');
 
-  // Project state variables
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>('');
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -24,24 +21,23 @@ const NewProject = () => {
         },
         body: JSON.stringify({
           title,
-          taskdescription,
+          description: taskdescription,
           status,
           startdate,
           enddate,
-          projectId: selectedProject, // Make sure to send the selected project ID
+          projectid: selectedProject,
         }),
       });
-
       const data = await result.json();
 
       if (result.ok) {
         console.log('✅ Task created successfully:', data);
         setTitle('');
         setTaskDescription('');
-        setStatus(''); // Reset status after success
-        setStartDate(''); // Reset start date
-        setEndDate(''); // Reset end date
-        setSelectedProject(''); // Reset selected project
+        setStatus('');
+        setStartDate('');
+        setEndDate('');
+        setSelectedProject('');
       } else {
         console.error('❌ Error creating task:', data);
       }
@@ -50,7 +46,6 @@ const NewProject = () => {
     }
   };
 
-  // Fetch projects for dropdown
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -74,15 +69,17 @@ const NewProject = () => {
     };
 
     fetchProjects();
-  }, []); // Only fetch projects once on mount
+  }, []);
 
-  // Handle project selection
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedProject(event.target.value);
   };
 
   return (
+    
     <div className="form">
+      <div className="stars" />
+      <div className="twinkling" />
       <h1>New Task</h1>
       <form className="inner-form" onSubmit={handleSubmit}>
         <label htmlFor="taskName">Task Name:</label>
@@ -94,11 +91,11 @@ const NewProject = () => {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <label htmlFor="taskDescription">Task Description:</label>
+        <label htmlFor="taskdescription">Task Description:</label>
         <input
           type="text"
           className="form-control"
-          id="taskDescription"
+          id="taskdescription"
           value={taskdescription}
           onChange={(e) => setTaskDescription(e.target.value)}
         />
@@ -126,7 +123,7 @@ const NewProject = () => {
           <option value="">-- Select a Project --</option>
           {projects.map((project) => (
             <option key={project.id} value={project.id}>
-              {project.projectName}
+              {project.projectname ?? 'Untitled Project'}
             </option>
           ))}
         </select>
@@ -156,5 +153,3 @@ const NewProject = () => {
     </div>
   );
 };
-
-export default NewProject;

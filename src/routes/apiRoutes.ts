@@ -16,6 +16,7 @@ router.post('/register', registerUser);
 
 
 router.get('/dashboard', authToken, getDashboardInfo);
+console.log('Dashboard route initialized');
 
 router.get('/projects', authToken, getProjects);
 router.get('/projects/team/:teamId', authToken, getProjectsByTeam);

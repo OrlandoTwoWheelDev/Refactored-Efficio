@@ -1,15 +1,25 @@
-a {
-  color: #0a0883;
+.main-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+}
+.main-nav a, .main-nav button {
   text-decoration: none;
+  padding: 0.5rem 1rem;
+  background-color: #0a67ca;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #033c79;
+  }
+  transition: background-color 0.3s ease;
 }
-
-a:hover {
-  color: #999999;
-  text-decoration: underline;
-}
-
-.navbar {
-  background-color: #1f1f1f !important;
+.main-nav button {
+  background-color: #dc3545; /* red for logout */
 }
 
 .btn.btn-primary {
@@ -28,8 +38,7 @@ a:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
-  height: 70dvh;
+  height: 100dvh;
 }
 
 .inner-form {
@@ -49,4 +58,31 @@ label {
     Arial, sans-serif;
   font-size: 1.2rem;
   margin-bottom: 0.1rem;
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns */
+  grid-template-rows: 1fr 1fr;    /* two rows */
+  gap: 20px;
+  background-image: url('../images/reach.png');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  height: 100dvh;
+  overflow: auto;
+}
+
+.chart-container, .project-section, .bar-chart-container, .task-section {
+  backdrop-filter: blur(4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  color: white;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  color : white !important;
 }

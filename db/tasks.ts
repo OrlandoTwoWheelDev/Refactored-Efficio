@@ -2,20 +2,22 @@ import pool from "./pool.js";
 
 export type Task = {
   id: number;
-  username: string;
+  status: string;
   title: string;
   description: string;
-  userid: number;
   projectid: number;
+  startdate: Date;
+  enddate: Date;
+  userid: number;
 };
 
-export const createTasks = async (title: string, description: string, username: string, projectid: number): Promise<Task | undefined> => {
+export const createTasks = async (title: string, description: string, status: string, projectid: number, startdate: Date, enddate: Date, userid: number): Promise<Task | undefined> => {
   try {
     const { rows } = await pool.query(`
-      INSERT INTO tasks (title, description, username, projectid)
-      VALUES($1, $2, $3, $4)
+      INSERT INTO tasks (title, description, status, projectid, startdate, enddate, userid)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
-    `, [title, description, username, projectid]);
+    `, [title, description, status, projectid, startdate, enddate, userid]);
     return rows[0];
   } catch (err) {
     console.error('Error creating task:', err);
@@ -78,7 +80,7 @@ export const getMyTasksPercentage = async (userid: number) => {
   try {
     const { rows: results } = await pool.query(`
       SELECT 
-        u.username,
+        u.id AS userid,
         ROUND(
           (COUNT(CASE WHEN t.status = 'active' THEN 1 END) * 100.0) / COUNT(*),
           1
@@ -94,22 +96,22 @@ export const getMyTasksPercentage = async (userid: number) => {
       FROM 
         tasks t
       JOIN
-        users u ON t.userid = u.id  -- Adjusted here to use t.userid
+        users u ON t.userid = u.id
       WHERE 
-        u.username = $1
+        u.id = $1
       GROUP BY 
         u.id;
     `, [userid]);
 
-    return {
-      userid: userid,
-      activepercentage: results[0]?.activepercentage,
-      pendingpercentage: results[0]?.pendingpercentage,
-      completedpercentage: results[0]?.completedpercentage,
-    };
+    return [
+      { name: "Active", completionPercentage: results[0]?.activepercentage || 0 },
+      { name: "Pending", completionPercentage: results[0]?.pendingpercentage || 0 },
+      { name: "Completed", completionPercentage: results[0]?.completedpercentage || 0 },
+    ];
 
   } catch (err) {
     console.error('Error calculating task percentages:', err);
+    return [];
   }
 };
 
