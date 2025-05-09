@@ -1,7 +1,7 @@
 import pool from "./pool.js";
 import { createUser } from "./users.js";
 import { User } from "./users.js";
-import { createTeams, createTeamsUser, createTeamsProject } from "./teams.js";
+import { createTeamsProject, createTeamWithOwner } from "./teams.js";
 import Team from "./teams.js";
 import { createProjects } from "./projects.js";
 import Project from "./projects.js";
@@ -56,6 +56,7 @@ const createTables = async () => {
     CREATE TABLE IF NOT EXISTS teamsusers (
       id SERIAL PRIMARY KEY,
       teamid INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+      role VARCHAR(20) DEFAULT 'member',
       userid INTEGER REFERENCES users(id) ON DELETE CASCADE,
       createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -105,14 +106,14 @@ const seedTasks = async () => {
 
 const seedTeams = async () => {
   return await Promise.all([
-    createTeams('Refactor Squad'),
-    createTeams('Bug Bashers'),
+    createTeamWithOwner('Refactor Squad', 'johndoe'),
+    createTeamWithOwner('Bug Bashers', 'janesmith'),
   ]);
 };
 
 const seedRelationships = async (users: User[], teams: Team[], projects: Project[]): Promise<void> => {
-  await createTeamsUser(teams[0].teamname, users[0].username);
-  await createTeamsUser(teams[1].teamname, users[1].username);
+  await createTeamWithOwner(teams[0].teamname, users[0].username);
+  await createTeamWithOwner(teams[1].teamname, users[1].username);
 
   await createTeamsProject(teams[0].teamname, projects[0].projectname);
   await createTeamsProject(teams[1].teamname, projects[1].projectname);

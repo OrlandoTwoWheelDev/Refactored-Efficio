@@ -1,6 +1,7 @@
 import './index.css';
 import './App.css';
 import { Routes, Route, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -19,6 +20,7 @@ import MyAccount from './frontend/myAccount';
 import Team from './frontend/team';
 import Login from './frontend/login';
 import Register from './frontend/register';
+import Starfield from './frontend/starfield';
 
 ChartJS.register(
   CategoryScale,
@@ -30,18 +32,30 @@ ChartJS.register(
 );
 
 const App = () => {
-  const isLoggedIn = !!localStorage.getItem('authToken');
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('authToken'),
+  );
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsLoggedIn(!!localStorage.getItem('authToken'));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    window.location.href = '/login';
+    setIsLoggedIn(false);
+    window.location.href = '/';
   };
 
   return (
     <>
+      <Starfield />
+      <div className="universe" />
       <nav className="main-nav">
-        <div className="stars" />
-        <div className="twinkling" />
         {isLoggedIn ? (
           <>
             <Link to="/dashboard">Dashboard</Link>

@@ -19,16 +19,17 @@ export const createUser = async (
   email: string,
   password: string,
   username: string,
+  teamname?: string,
 ): Promise<User | undefined> => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
       `
-      INSERT INTO users (firstname, lastname, email, password, username)
-      VALUES($1, $2, $3, $4, $5)
+      INSERT INTO users (firstname, lastname, email, password, username, teamname)
+      VALUES($1, $2, $3, $4, $5, $6)
       RETURNING *
       `,
-      [firstname, lastname, email, hashedPassword, username],
+      [firstname, lastname, email, hashedPassword, username, teamname],
     );
     return rows[0];
   } catch (err) {
@@ -105,7 +106,7 @@ export const getUserByTeamName = async (
       `
       SELECT u.*
       FROM users u
-      JOIN teamsusers tu ON u.id = tu.userid
+      JOIN teamsusers tu ON u.username = tu.username
       JOIN teams t ON tu.teamid = t.id
       WHERE t.teamname = $1
     `,
@@ -123,46 +124,30 @@ export const getUserByTeamName = async (
 
 export const fetchMyAccountInfo = async (username: string) => {
   try {
-    const { rows: myAccountInfo } = await pool.query(
+    const { rows } = await pool.query(
       `
-    WITH userteam AS (
-    SELECT 
-      u.id AS userid,
-      u.firstname,
-      u.lastname,
-      u.email,
-      u.username,
-      t.id AS teamid,
-      t.teamname
+      SELECT 
+        u.firstname,
+        u.lastname,
+        u.email,
+        u.username,
+        t.teamname
       FROM users u
-      JOIN teamsusers tu ON u.id = tu.userid
-      JOIN teams t ON tu.teamid = t.id
-      )
-    SELECT 
-      currentUser.firstname AS userfirstName,
-      currentUser.lastname AS userlastName,
-      currentUser.email AS useremail,
-      currentUser.username AS userusername,
-      currentUser.teamname AS userteamname,
-      teammate.firstname AS teammatefirstName,
-      teammate.lastname AS teammateLastName,
-      teammate.email AS teammateEmail,
-      teammate.username AS teammateUsername
-    FROM userteam currentUser
-    LEFT JOIN userteam teammate 
-      ON currentUser.teamid = teammate.teamid
-      AND currentUser.userid <> teammate.userid
-    WHERE currentUser.username = $1;
-    `,
+      LEFT JOIN teamsusers tu ON u.username = tu.username
+      LEFT JOIN teams t ON tu.teamid = t.id
+      WHERE u.username = $1;
+      `,
       [username],
     );
 
-    return myAccountInfo;
+    return rows[0];
   } catch (err) {
     console.error('Error fetching account info:', err);
     throw err;
   }
 };
+
+
 
 export const updatingAccountInfo = async (
   id: number,

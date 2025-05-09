@@ -54,7 +54,6 @@ const Dashboard = () => {
         }
 
         setTimeout(() => setDashboardData(data), 1000);
-        console.log('Dashboard data:', data);
       } catch (error) {
         setError(
           error instanceof Error ? error.message : 'An unknown error occurred',
