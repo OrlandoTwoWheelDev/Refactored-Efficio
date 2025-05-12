@@ -34,6 +34,8 @@ export default function Login() {
 
       const data = await response.json();
       localStorage.setItem('authToken', data.token);
+      localStorage.setItem('username', data.username);
+      window.dispatchEvent(new Event('storage'));
       navigate('/dashboard');
     } catch (err) {
       setError('An error occurred. Please try again later.');

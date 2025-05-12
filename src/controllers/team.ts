@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllTeams, createTeams, updateTeams, deleteTeams, createTeamsUser } from "../../db/teams.js"; // Adjust the import based on your actual file structure
+import { getAllTeams, createTeamWithOwner, updateTeams, deleteTeams } from "../../db/teams.js";
 
 export const getTeamPage = (req: Request, res: Response) => {
   res.send('Welcome to the Team page!')
@@ -15,18 +15,31 @@ export const getTeams = async (req: Request, res: Response) => {
   }
 };
 
-export const createTeam = async (req: Request, res: Response) => {
+export const createTeam = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { teamname } = req.body;
-    const newTeam = await createTeams(teamname);
+    const { teamname, username } = req.body;
+console.log("DEBUGGING", req.body)
+    if (!teamname || !username) {
+      res.status(400).json({ error: 'Team name and username are required' });
+      return;
+    }
+
+    const newTeam = await createTeamWithOwner(teamname, username);
+
+    if (!newTeam) {
+      res.status(500).json({ error: 'Failed to create team' });
+      return;
+    }
+
     res.status(201).json(newTeam);
-  } catch (error) {
-    console.error('Error creating team:', error);
-    res.status(500).json({ error: 'Server error while creating team.' });
+  } catch (err) {
+    console.error('Error in createTeam controller:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
-export const updateTeam = async (req: Request, res: Response) => {
+
+export const updateTeam = async (req: Request, res: Response): Promise<void> => {
   try {
     const { teamname, newteamname } = req.body;
     const updatedTeam = await updateTeams(teamname, newteamname);
@@ -37,7 +50,7 @@ export const updateTeam = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTeam = async (req: Request, res: Response) => {
+export const deleteTeam = async (req: Request, res: Response): Promise<void> => {
   try {
     const { teamname } = req.body;
     const deletedTeam = await deleteTeams(teamname);
@@ -47,15 +60,3 @@ export const deleteTeam = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error while deleting team.' });
   }
 };
-
-export const assignUserToTeam = async (req: Request, res: Response) => {
-  try {
-    const { teamname, username } = req.body;
-    const result = await createTeamsUser(teamname, username);
-    res.json(result);
-  } catch (error) {
-    console.error('Error assigning user to team:', error);
-    res.status(500).json({ error: 'Server error while assigning user to team.' });
-  }
-};
-

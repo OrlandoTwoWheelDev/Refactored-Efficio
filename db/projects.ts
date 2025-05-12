@@ -101,7 +101,7 @@ export const getProjectsByUsername = async (
       JOIN projectsteams pt ON p.id = pt.projectid
       JOIN teams t ON pt.teamid = t.id
       JOIN teamsusers tu ON t.id = tu.teamid
-      JOIN users u ON tu.userid = u.id
+      JOIN users u ON tu.username = u.username
       WHERE u.username = $1;
     `,
       [username]

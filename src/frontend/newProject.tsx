@@ -49,7 +49,7 @@ export default function NewProject() {
             background-size: cover;
             background-position: center;
             overflow: hidden;
-            height: 100dvh;
+            height: 93dvh;
             width: 100%;
           }
         `}

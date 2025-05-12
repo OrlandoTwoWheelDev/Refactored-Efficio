@@ -1,68 +1,51 @@
-import pool from './pool.js';
+import pool from './pool';
 
 type Team = {
   id: number;
   teamname: string;
   username: string;
-  projectname: string;
+  projectname?: string;
 };
 
-export const createTeams = async (
-  teamname: string,
-): Promise<Team | undefined> => {
-  try {
-    const { rows } = await pool.query(
-      `
-      INSERT INTO teams (teamname)
-      VALUES ($1)
-      RETURNING *;
-    `,
-      [teamname],
-    );
-
-    console.log('Team created:', rows);
-    return rows[0];
-  } catch (err) {
-    console.log('Error creating team:', err);
-  }
-};
-
-export const createTeamsUser = async (
+export const createTeamWithOwner = async (
   teamname: string,
   username: string,
 ): Promise<Team | undefined> => {
   try {
-    const { rows: teamid } = await pool.query(
-      `
-      SELECT id FROM teams WHERE teamname = $1;
-    `,
-      [teamname],
+    await pool.query('BEGIN');
+
+    const { rows: userRows } = await pool.query(
+      `SELECT username FROM users WHERE username = $1;`,
+      [username]
     );
+    if (!userRows || userRows.length === 0) throw new Error('User not found');
 
-    const { rows: userid } = await pool.query(
+    const { rows: teamRows } = await pool.query(
       `
-      SELECT id FROM users WHERE username = $1;
-    `,
-      [username],
-    );
-
-    if (teamid.length === 0 || userid.length === 0) {
-      throw new Error('Team or User not found');
-    }
-
-    const { rows } = await pool.query(
-      `
-      INSERT INTO teamsusers (teamid, userid)
-      VALUES ($1, $2)
+      INSERT INTO teams (teamname)
+      VALUES ($1)
       RETURNING *;
-    `,
-      [teamid[0].id, userid[0].id],
+      `,
+      [teamname]
     );
 
-    console.log('User added to team:', rows);
-    return rows[0];
+    const teamid = teamRows[0].id;
+
+    await pool.query(
+      `
+      INSERT INTO teamsusers (teamid, username, role)
+      VALUES ($1, $2, $3);
+      `,
+      [teamid, username, 'owner']
+    );
+
+    await pool.query('COMMIT');
+    console.log('Team created with owner:', teamRows[0]);
+    return teamRows[0];
   } catch (err) {
-    console.log('Error assigning user to team:', err);
+    await pool.query('ROLLBACK');
+    console.error('Error creating team with owner:', err);
+    throw err;
   }
 };
 
@@ -128,7 +111,7 @@ export const retrieveTeamsByUsername = async (
       SELECT t.teamname, t.id
       FROM teams t
       JOIN teamsusers tu ON t.id = tu.teamid
-      JOIN users u ON tu.userid = u.id
+      JOIN users u ON tu.username = u.username
       WHERE u.username = $1;
     `,
       [username],

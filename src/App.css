@@ -38,11 +38,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100dvh;
+  height: 75dvh;
 }
 
 .inner-form {
-  background-color: rgba(243, 138, 217, 0.5);
+  background-color: rgba(150, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
   border-radius: 12px;
@@ -86,3 +86,30 @@ canvas {
   height: 100% !important;
   color : white !important;
 }
+
+.homepage {
+  background-image: url('../images/homepage.jpg');
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.9;
+  overflow: hidden;
+  max-height: 100dvh;
+  height: 93dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+} 
+
+.homepage-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  background-color: rgba(5, 165, 0, 0.295);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+} 

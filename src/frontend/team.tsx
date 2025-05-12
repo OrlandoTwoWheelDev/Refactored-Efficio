@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
+import Team from '../../db/teams';
 
 export default function TeamPage() {
-  const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [selectedteam, setSelectedTeam] = useState<number | null>(null);
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [newteamname, setNewTeamName] = useState('');
+  const storedUsername = localStorage.getItem('username') || '';
+  const [username, setUsername] = useState(storedUsername);
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const response = await fetch('/api/teams');
+      const response = await fetch('/api/team', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        credentials: 'include',
+      });
       const data = await response.json();
       setTeams(data);
     };
@@ -18,8 +26,15 @@ export default function TeamPage() {
   const handleCreateTeam = async () => {
     const response = await fetch('/api/team', {
       method: 'POST',
-      body: JSON.stringify({ name: newteamname }),
-      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        teamname: newteamname,
+        username: username,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+      credentials: 'include',
     });
     const data = await response.json();
     setTeams([...teams, data]);
@@ -27,23 +42,29 @@ export default function TeamPage() {
   };
 
   const handleSelectTeam = async (teamid: string) => {
-    const response = await fetch(`/api/projects?teamId=${teamid}`);
+    const response = await fetch(`/api/projects?teamId=${teamid}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+      credentials: 'include',
+    });
     const data = await response.json();
     setProjects(data);
     setSelectedTeam(Number(teamid));
   };
 
-  const handleDeleteTeam = async (teamid: number) => {
+  const handleDeleteTeam = async (teamid: string) => {
     await fetch(`/api/teams/${teamid}`, {
       method: 'DELETE',
     });
-    setTeams(teams.filter((team) => team.id !== teamid.toString()));
+    setTeams(teams.filter((team) => team.id !== Number(teamid)));
   };
 
   return (
-    <div>
-      <h1>Teams</h1>
-      <div>
+    <div className="form">
+      <div className="inner-form">
+        <h1 style={{ color: 'white' }}>Teams</h1>
+        <br />
         <input
           type="text"
           className="form-control"
@@ -51,36 +72,82 @@ export default function TeamPage() {
           onChange={(e) => setNewTeamName(e.target.value)}
           placeholder="Enter new team name"
         />
+        <input
+          type="text"
+          className="form-control"
+          style={{ marginTop: '10px' }}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter your username"
+        />
+        <br />
         <button className="btn btn-primary" onClick={handleCreateTeam}>
           Create Team
         </button>
       </div>
-
-      <div>
-        <h2>Select Team</h2>
+      <br />
+      <div className="inner-form">
+        <h2 style={{ color: 'white' }}>Select Team</h2>
         {teams.length ? (
-          <select onChange={(e) => handleSelectTeam(String(e.target.value))}>
+          <ul style={{ paddingLeft: 0 }}>
             {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <p>No teams available. Create one!</p>
-        )}
-      </div>
-
-      <div>
-        <h2>Projects</h2>
-        {projects.length ? (
-          <ul>
-            {projects.map((project) => (
-              <li key={project.id}>{project.name}</li>
+              <li
+                key={team.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                  listStyle: 'none',
+                }}
+              >
+                <button
+                  onClick={() => handleSelectTeam(team.id.toString())}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'white',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    marginRight: '10px',
+                  }}
+                >
+                  {team.teamname}
+                </button>
+                <button
+                  onClick={() => handleDeleteTeam(team.id.toString())}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Delete
+                </button>
+              </li>
             ))}
           </ul>
         ) : (
-          <p>No projects available. Create one within the team.</p>
+          <p style={{ color: 'gray' }}>No teams available. Create one!</p>
+        )}
+      </div>
+      <br />
+      <div className="inner-form">
+        <h2 style={{ color: 'white' }}>Projects</h2>
+        {projects.length ? (
+          <ul>
+            {projects.map((project) => (
+              <li key={project.id} style={{ marginBottom: '8px' }}>
+                {project.name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p style={{ color: 'gray' }}>
+            No projects available. Create one within the team.
+          </p>
         )}
       </div>
     </div>

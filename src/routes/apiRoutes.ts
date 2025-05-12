@@ -6,7 +6,7 @@ import { loginUser } from "../controllers/login.js";
 import { registerUser } from "../controllers/register.js";
 import { getAccountInfo, updateAccountInfo, deleteAccountInfo } from "../controllers/myaccount.js";
 import { getDashboardInfo } from "../controllers/dashboard.js";
-import { getTeams, createTeam, updateTeam, deleteTeam, assignUserToTeam } from "../controllers/team.js";
+import { getTeams, createTeam, updateTeam, deleteTeam } from "../controllers/team.js";
 import { authToken } from "../../middleware/authToken.js";
 
 const router = Express.Router();
@@ -39,7 +39,7 @@ router.delete('/myaccount', authToken, deleteAccountInfo);
 
 router.get('/team', authToken, getTeams);
 router.post('/team', authToken, createTeam);
-router.post('/team/:teamId/user/:userId', authToken, assignUserToTeam);
+router.post('/team/:teamId/user/:userId', authToken);
 router.put('/team/:teamId', authToken, updateTeam);
 router.delete('/team/:teamId', authToken, deleteTeam);
 
