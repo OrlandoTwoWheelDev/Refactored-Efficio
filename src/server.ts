@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = parseInt(process.env.PORT || '10000', 10);
+const port = process.env.PORT || 10000;
 
 const server = createServer(app);
 
@@ -26,7 +26,7 @@ app.get(/^\/(?!api).*/, (_req, res) => {
   res.sendFile(path.join(__dirname, '../dist/client/index.html'));
 });
 
-server.listen(port, '0.0.0.0', () => {
+server.listen(port, undefined, () => {
   console.log(`🚀 Server + WebSocket listening at http://localhost:${port}`);
   console.log('Socket.IO server initialized');
 });

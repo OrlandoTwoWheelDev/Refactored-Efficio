@@ -1,5 +1,8 @@
 import { config } from 'dotenv';
-config();
+
+if (process.env.NODE_ENV !== 'production') {
+  config();
+}
 
 const required = (key: string): string => {
   const value = process.env[key];
