@@ -1,4 +1,4 @@
-import pool from './pool';
+import pool from './pool.js';
 
 type Team = {
   id: number;
