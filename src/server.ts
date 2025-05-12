@@ -19,11 +19,11 @@ initSocket(server);
 
 app.use(cors({origin: '*'}));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../dist/client')));
 app.use(mainRouter);
 
 app.get(/^\/(?!api).*/, (_req, res) => {
-  res.sendFile(path.join(__dirname, '../client/index.html'));
+  res.sendFile(path.join(__dirname, '../dist/client/index.html'));
 });
 
 server.listen(port, '0.0.0.0', () => {
