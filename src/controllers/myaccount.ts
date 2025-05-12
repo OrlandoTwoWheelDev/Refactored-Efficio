@@ -26,13 +26,12 @@ export const getAccountInfo = async (req: Request, res: Response): Promise<void>
     }
 
     const accountInfo = {
-      firstname: rows[0].firstname,
-      lastname: rows[0].lastname,
-      email: rows[0].email,
-      username: rows[0].username,
-      teamname: rows[0].teamname || undefined,
+      firstname: rows.firstname,
+      lastname: rows.lastname,
+      email: rows.email,
+      username: rows.username,
+      teamname: rows.teamname || undefined,
     };
-
     res.json({ user: accountInfo });
   } catch (error) {
     console.error('Error fetching account info:', error);

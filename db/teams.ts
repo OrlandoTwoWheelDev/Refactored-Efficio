@@ -1,4 +1,4 @@
-import pool from './pool.js';
+import pool from './pool';
 
 type Team = {
   id: number;
@@ -9,7 +9,7 @@ type Team = {
 
 export const createTeamWithOwner = async (
   teamname: string,
-  username: string
+  username: string,
 ): Promise<Team | undefined> => {
   try {
     await pool.query('BEGIN');
@@ -18,7 +18,7 @@ export const createTeamWithOwner = async (
       `SELECT username FROM users WHERE username = $1;`,
       [username]
     );
-    if (!userRows.length) throw new Error('User not found');
+    if (!userRows || userRows.length === 0) throw new Error('User not found');
 
     const { rows: teamRows } = await pool.query(
       `
@@ -29,14 +29,14 @@ export const createTeamWithOwner = async (
       [teamname]
     );
 
-    const teamId = teamRows[0].id;
+    const teamid = teamRows[0].id;
 
     await pool.query(
       `
       INSERT INTO teamsusers (teamid, username, role)
       VALUES ($1, $2, $3);
       `,
-      [teamId, username, 'owner']
+      [teamid, username, 'owner']
     );
 
     await pool.query('COMMIT');
@@ -45,6 +45,7 @@ export const createTeamWithOwner = async (
   } catch (err) {
     await pool.query('ROLLBACK');
     console.error('Error creating team with owner:', err);
+    throw err;
   }
 };
 

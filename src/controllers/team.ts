@@ -18,7 +18,7 @@ export const getTeams = async (req: Request, res: Response) => {
 export const createTeam = async (req: Request, res: Response): Promise<void> => {
   try {
     const { teamname, username } = req.body;
-
+console.log("DEBUGGING", req.body)
     if (!teamname || !username) {
       res.status(400).json({ error: 'Team name and username are required' });
       return;

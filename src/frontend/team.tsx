@@ -6,9 +6,8 @@ export default function TeamPage() {
   const [selectedteam, setSelectedTeam] = useState<number | null>(null);
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [newteamname, setNewTeamName] = useState('');
-  const [username, setUsername] = useState<string>(
-    localStorage.getItem('username') || '',
-  ); // use this line
+  const storedUsername = localStorage.getItem('username') || '';
+  const [username, setUsername] = useState(storedUsername);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -27,7 +26,10 @@ export default function TeamPage() {
   const handleCreateTeam = async () => {
     const response = await fetch('/api/team', {
       method: 'POST',
-      body: JSON.stringify({ teamname: newteamname, username: localStorage.getItem('username') }),
+      body: JSON.stringify({
+        teamname: newteamname,
+        username: username,
+      }),
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
