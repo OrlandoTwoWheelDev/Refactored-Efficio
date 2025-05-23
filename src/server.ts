@@ -1,4 +1,3 @@
-// server.ts
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -17,16 +16,19 @@ const server = createServer(app);
 
 initSocket(server);
 
-app.use(cors({origin: '*'}));
+app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../dist/client')));
+const clientPath = path.join(process.cwd(), 'dist/client');
+
+app.use(express.static(clientPath));
 app.use(mainRouter);
 
 app.get(/^\/(?!api).*/, (_req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/client/index.html'));
+  res.sendFile(path.join(clientPath, 'index.html'));
 });
 
-server.listen(port, undefined, () => {
+
+server.listen(port, () => {
   console.log(`🚀 Server + WebSocket listening at http://localhost:${port}`);
   console.log('Socket.IO server initialized');
 });

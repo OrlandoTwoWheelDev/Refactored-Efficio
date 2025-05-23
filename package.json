@@ -11,7 +11,6 @@
     "start": "node dist/src/server.js",
     "build": "tsc --project tsconfig.json && vite build",
     "watch": "tsc --watch",
-    "postinstall": "npm run build",
     "refresh": "npm run clean && npm run build && npm run start"
   },
   "dependencies": {

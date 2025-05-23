@@ -95,3 +95,11 @@ From there, it seems to be misunderstandings of why some fetch calls were built 
 
 ### Styling
 To me, styling is more about how to ask the right questions of what you want on the page. With these questions, you can more rapidly get the answers YOU need, and get things rolling. 
+
+# Update 5/23/2025
+
+So, figured out why I couldnt get this to Deploy my docker container. The issue came from the setup in my server.ts! With the removal of the 'relative' path by defining a client path and making it absolute, it resolved my issues! 
+
+Of course, once I had my service "Live" on Render, I realized there was no database. I made one but then was informed that I would need to run all sorts of scripts and set more variables. But after asking some questions, found out I can just dockerize my database and send that up!
+
+Regardless, this was a nice breakthrough in getting the main part of the app external! 🤩🥳🎉

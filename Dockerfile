@@ -1,23 +1,20 @@
-# 1. Base image
-FROM node:23-slim
+# Base image
+FROM node:20-alpine
 
-# 2. Set working directory
+# Set working directory
 WORKDIR /app
 
-# 3. Copy package.json files and install dependencies first (to optimize caching)
-COPY package*.json ./
-
-# 4. Install dependencies
-RUN npm install
-
-# 5. Copy the entire project
+# Copy all source code including tsconfig before install
 COPY . .
 
-# 6. Build the backend + frontend
+# Install deps
+RUN npm install
+
+# Build backend + frontend
 RUN npm run build
 
-# 7. Expose port
+# Expose backend port
 EXPOSE 10000
 
-# 8. Start the app
-CMD ["npm", "run", "start"]
+# Start backend server
+CMD ["node", "dist/src/server.js"]
